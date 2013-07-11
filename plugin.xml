@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<go-plugin id="nuget" version="1">
+<about>
+    <name>Nuget plugin</name>
+    <version>1.0.0</version>
+    <target-go-version>13.3</target-go-version>
+    <description>Plugin that polls Nuget repository</description>
+    <vendor>
+        <name>ThoughtWorks Go Team</name>
+        <url>www.thoughtworks.com</url>
+    </vendor>
+</about>
+</go-plugin>
+

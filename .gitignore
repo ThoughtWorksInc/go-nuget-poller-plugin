@@ -1,0 +1,6 @@
+dist/*
+out/*
+target/*
+*.iws
+go-plugin-api*.jar
+reports/*
