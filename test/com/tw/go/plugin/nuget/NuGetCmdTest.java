@@ -94,7 +94,7 @@ public class NuGetCmdTest {
 
         CommandThread(String repoId) {
             this.repoId = repoId;
-            repoUrl = "http://localhost:4567/nuget/default";
+            repoUrl = "file://d:/tmp/nuget-local-repo";//"http://localhost:4567/nuget/default";
         }
 
         public void run() {

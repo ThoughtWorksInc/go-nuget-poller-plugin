@@ -22,10 +22,6 @@ public class NuGetCmdParams {
         return "Id:"+packageSpec;
     }
 
-    public String getRepoFromId() {
-        return repoId + "," + repoUrl.getUrlWithBasicAuth();
-    }
-
     public String getRepoUrl() {
         return repoUrl.forDisplay();
     }

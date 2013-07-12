@@ -82,4 +82,31 @@ public class RepoUrlTest {
         assertThat(errors.getErrors().size(), is(expectedErrors.size()));
         assertThat(errors.getErrors().containsAll(expectedErrors), is(true));
     }
+    @Test
+    public void shouldReturnUrlWithEscapedPassword() throws Exception {
+        String repourl = "http://repohost:1111/some/path#fragment?q=foo";
+        String username = "username";
+        String password = "!4321abcd";
+        RepoUrl repoUrl = new RepoUrl(repourl, username, password);
+
+        assertThat(repoUrl.getUrlWithBasicAuth(), is("http://username:%214321abcd@repohost:1111/some/path#fragment?q=foo"));
+    }
+
+    @Test
+    public void shouldThrowExceptionIfRepoUrlIsInvalid() throws Exception {
+        try {
+            RepoUrl repoUrl = new RepoUrl("://some/path", "username", "!4321abcd");
+            repoUrl.getUrlWithBasicAuth();
+            fail("should throw exception");
+        } catch (Exception e) {
+            assertThat(e.getMessage(), containsString("java.net.MalformedURLException"));
+        }
+    }
+
+    @Test
+    public void shouldReturnUrlAsIsIfNoCredentialsProvided() throws Exception {
+        String url = "http://repohost:1111/some/path#fragment?q=foo";
+        RepoUrl repoUrl = new RepoUrl(url, null, null);
+        assertThat(repoUrl.getUrlWithBasicAuth(), is(url));
+    }
 }

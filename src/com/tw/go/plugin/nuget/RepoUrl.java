@@ -61,9 +61,9 @@ public class RepoUrl {
         try {
             new URL(localUrl);
             if (credentials.provided()) {
-                String[] split = localUrl.split("//");
-                if (split.length != 2) throw new RuntimeException(String.format("Invalid uri format %s", this.url));
-                localUrl = split[0] + "//" + credentials.getUserInfo() + "@" + split[1];
+                String[] parts = localUrl.split("//");
+                if (parts.length != 2) throw new RuntimeException(String.format("Invalid uri format %s", this.url));
+                localUrl = parts[0] + "//" + credentials.getUserInfo() + "@" + parts[1];
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
