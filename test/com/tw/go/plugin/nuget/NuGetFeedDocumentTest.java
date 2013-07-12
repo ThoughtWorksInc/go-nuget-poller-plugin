@@ -25,7 +25,7 @@ public class NuGetFeedDocumentTest {
         builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new File("test\\nuget-multiple-entries.xml"));
         try {
-            new NuGetCmdOutput("pkgName", "1.0").getPackageRevision(new NuGetFeedDocument(doc));
+            new NuGetPackage("pkgName", "1.0").getPackageRevision(new NuGetFeedDocument(doc));
             fail("Should have thrown excption for multiple entries");
         } catch (Exception e) {
             assertThat(e.getMessage(), is("Multiple entries in feed for pkgName 1.0"));
@@ -39,10 +39,10 @@ public class NuGetFeedDocumentTest {
         DocumentBuilder builder;
         builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new File("test\\nuget-good-feed.xml"));
-        PackageRevision result = new NuGetCmdOutput("7-Zip.CommandLine","9.20.0").getPackageRevision(new NuGetFeedDocument(doc));
+        PackageRevision result = new NuGetPackage("7-Zip.CommandLine","9.20.0").getPackageRevision(new NuGetFeedDocument(doc));
         assertThat(result.getUser(), is("Igor Pavlov"));
         assertThat(result.getRevision(), is("7-Zip.CommandLine-9.20.0"));
         assertThat(result.getTimestamp(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse("2013-06-09T15:36:30.807")));
-        assertThat(result.getDataFor(NuGetCmdOutput.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
+        assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
     }
 }
