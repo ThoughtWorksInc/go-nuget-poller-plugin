@@ -27,9 +27,15 @@ public class ProcessOutput {
         return stdErr;
     }
 
-    public String getStdErrorAsString() {
+    public String getErrorDetail() {
         if (hasErrors())
             return "Error Message: " + join(getStdErr(), "\n");
+        return "";
+    }
+
+    public String getErrorSummary() {
+        if (hasErrors())
+            return "Error Message: " + stdErr.get(0);
         return "";
     }
 

@@ -34,7 +34,7 @@ public class ProcessRunnerTest {
     @Test
     public void shouldReturnErrorOutputIfCommandFails() {
         ProcessOutput output = new ProcessRunner().execute(CHOICE_INVALID);
-        assertThat(output.getStdErrorAsString(), containsString("Error Message: ERROR: Invalid syntax."));
+        assertThat(output.getErrorDetail(), containsString("Error Message: ERROR: Invalid syntax."));
         assertThat(output.getReturnCode(), is(not(0)));
     }
 }

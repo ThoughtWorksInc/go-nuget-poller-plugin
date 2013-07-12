@@ -32,7 +32,12 @@ public class NuGetCmd {
         if (isSuccessful(processOutput)) {
             return nuGetFactory.createNuGetCmdOutputInstance(params, processOutput).getPackageRevision();
         }
-        throw new RuntimeException(format("Error while querying repository with path '%s' and package spec '%s'. %s", params.getRepoUrl(), params.getPackageSpec(), processOutput.getStdErrorAsString()));
+        LOGGER.info(processOutput.getErrorDetail());
+        throw new RuntimeException(getErrorMessage(processOutput.getErrorSummary()));
+    }
+
+    private String getErrorMessage(String message) {
+        return format("Error while querying repository with path '%s' and package spec '%s'. %s", params.getRepoUrl(), params.getPackageSpec(), message);
     }
 
     private boolean isSuccessful(ProcessOutput processOutput) {
