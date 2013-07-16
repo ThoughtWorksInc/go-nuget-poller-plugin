@@ -1,4 +1,4 @@
-package com.tw.go.plugin.nuget;
+package com.tw.go.plugin.nuget.config;
 
 import org.junit.Test;
 
@@ -8,19 +8,19 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class FileBasedConnectionCheckerTest {
+public class FileRepoUrlTest {
 
     @Test
     public void shouldNotThrowExceptionIfFileExistsPasses() {
         String absolutePath = new File("").getAbsolutePath();
-        new FileBasedConnectionChecker().checkConnection("file://" + absolutePath, new Credentials(null, null));
+        new FileRepoUrl("file://" + absolutePath).checkConnection();
     }
 
     @Test
     public void shouldThrowExceptionIfUserNameAndPasswordIsProvided() {
         String absolutePath = new File("").getAbsolutePath();
         try {
-            new FileBasedConnectionChecker().checkConnection("file://" + absolutePath, new Credentials("user", "pwd"));
+            RepoUrl.create("file://" + absolutePath, "user", "passwd").checkConnection();
             fail("should fail");
         } catch (Exception e) {
             assertThat(e.getMessage(), is("File protocol does not support username and/or password."));
@@ -30,7 +30,7 @@ public class FileBasedConnectionCheckerTest {
     @Test
     public void shouldFailCheckConnectionIfFileDoesNotExist() {
         try {
-            new FileBasedConnectionChecker().checkConnection("file://foo", new Credentials(null, null));
+            new FileRepoUrl("file://foo").checkConnection();
             fail("should fail");
         } catch (Exception e) {
             assertThat(e.getMessage(), is("Invalid file path."));

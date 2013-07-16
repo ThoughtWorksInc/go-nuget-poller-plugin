@@ -4,15 +4,16 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigur
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigurations;
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
-import com.tw.go.plugin.nuget.RepoUrl;
+import com.tw.go.plugin.nuget.config.InvalidRepoUrl;
+import com.tw.go.plugin.nuget.config.RepoUrl;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tw.go.plugin.nuget.RepoUrl.REPO_URL;
 import static com.tw.go.plugin.nuget.apimpl.NuGetConfig.PACKAGE_SPEC;
+import static com.tw.go.plugin.nuget.config.RepoUrl.REPO_URL;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -57,9 +58,9 @@ public class NuGetConfigTest {
     @Test
     public void shouldCorrectlyCheckIfRepositoryConfigurationValid() {
         assertForRepositoryConfigurationErrors(new PackageConfigurations(), asList(new ValidationError(REPO_URL, "Repository url not specified")), false);
-        assertForRepositoryConfigurationErrors(configurations(REPO_URL, null), asList(new ValidationError(REPO_URL, "Repository url is empty")), false);
-        assertForRepositoryConfigurationErrors(configurations(REPO_URL, ""), asList(new ValidationError(REPO_URL, "Repository url is empty")), false);
-        assertForRepositoryConfigurationErrors(configurations(REPO_URL, "incorrectUrl"), asList(new ValidationError(REPO_URL, "Invalid URL : incorrectUrl")), false);
+        assertForRepositoryConfigurationErrors(configurations(REPO_URL, null), asList(new ValidationError(REPO_URL, InvalidRepoUrl.MESSAGE)), false);
+        assertForRepositoryConfigurationErrors(configurations(REPO_URL, ""), asList(new ValidationError(REPO_URL, InvalidRepoUrl.MESSAGE)), false);
+        assertForRepositoryConfigurationErrors(configurations(REPO_URL, "incorrectUrl"), asList(new ValidationError(REPO_URL, InvalidRepoUrl.MESSAGE)), false);
         assertForRepositoryConfigurationErrors(configurations(REPO_URL, "http://correct.com/url"), new ArrayList<ValidationError>(), true);
     }
 

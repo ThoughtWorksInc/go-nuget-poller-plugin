@@ -9,7 +9,7 @@ import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.nuget.NuGetCmd;
 import com.tw.go.plugin.nuget.NuGetCmdParams;
-import com.tw.go.plugin.nuget.RepoUrl;
+import com.tw.go.plugin.nuget.config.RepoUrl;
 
 public class NuGetPoller implements PackageRepositoryPoller {
     private static Logger LOGGER = Logger.getLoggerFor(NuGetPoller.class);
@@ -24,7 +24,7 @@ public class NuGetPoller implements PackageRepositoryPoller {
         String usernameValue = username == null ? null : username.getValue();
         String passwordValue = password == null ? null : password.getValue();
 
-        RepoUrl repoUrl = new RepoUrl(repoUrlConfig.getValue(), usernameValue, passwordValue);
+        RepoUrl repoUrl = RepoUrl.create(repoUrlConfig.getValue(), usernameValue, passwordValue);
         repoUrl.checkConnection();
         PackageRevision packageRevision = executeNuGetCmd(repoUrl.getRepoId(), repoUrl, packageSpec);
         LOGGER.info(String.format("getLatestRevision returning with %s, %s", packageRevision.getRevision(), packageRevision.getTimestamp()));

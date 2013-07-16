@@ -1,4 +1,4 @@
-package com.tw.go.plugin.nuget;
+package com.tw.go.plugin.nuget.config;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
@@ -38,5 +38,9 @@ public class Credentials {
 
     public boolean provided() {
         return StringUtil.isNotBlank(user) && StringUtil.isNotBlank(password);
+    }
+
+    public boolean detected() {
+        return (user != null) || (password != null);
     }
 }

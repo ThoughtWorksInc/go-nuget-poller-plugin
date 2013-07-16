@@ -1,4 +1,4 @@
-package com.tw.go.plugin.nuget;
+package com.tw.go.plugin.nuget.config;
 
 import org.junit.Test;
 
@@ -7,16 +7,16 @@ import java.net.UnknownHostException;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class HttpConnectionCheckerTest {
+public class HttpRepoURLTest {
     @Test
     public void shouldNotThrowExceptionIfCheckConnectionToTheRepoPasses() {
-        new HttpConnectionChecker().checkConnection("http://google.com", new Credentials(null, null));
+        RepoUrl.create("http://google.com", null, null).checkConnection();
     }
 
     @Test
     public void shouldFailCheckConnectionToTheRepoWhenUrlIsNotReachable() {
         try {
-            new HttpConnectionChecker().checkConnection("http://nonexistentfqdngibberish.com", new Credentials(null, null));
+            RepoUrl.create("http://nonexistentfqdngibberish.com", null, null).checkConnection();
             fail("should fail");
         } catch (RuntimeException e) {
             assertTrue(e.getCause() instanceof UnknownHostException);

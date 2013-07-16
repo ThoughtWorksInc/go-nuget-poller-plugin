@@ -1,38 +1,29 @@
-package com.tw.go.plugin.nuget;
+package com.tw.go.plugin.nuget.config;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.util.StringUtil;
-import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 
-public class RepoUrl {
-    public static final String REPO_URL = "REPO_URL";
-    public static final String USERNAME = "USERNAME";
-    public static final String PASSWORD = "PASSWORD";
-    private final String url;
-    private Credentials credentials;
-    private static HashMap<String, ConnectionChecker> map = new HashMap<String, ConnectionChecker>();
+public class HttpRepoURL extends RepoUrl {
 
-    static {
-        map.put("http", new HttpConnectionChecker());
-    }
-
-    public RepoUrl(String url, String user, String password) {
-        this.url = url;
-        this.credentials = new Credentials(user, password);
+    public HttpRepoURL(String url, String user, String password) {
+        super(url, user, password);
     }
 
     public void validate(Errors errors) {
         try {
-            if (StringUtil.isBlank(url)) {
-                errors.addError(new ValidationError(REPO_URL, "Repository url is empty"));
-                return;
-            }
+            doBasicValidations(errors);
             URL validatedUrl = new URL(this.url);
             if (!(validatedUrl.getProtocol().startsWith("http"))) {
                 errors.addError(new ValidationError(REPO_URL, "Invalid URL: Only http is supported."));
@@ -47,14 +38,27 @@ public class RepoUrl {
         }
     }
 
-    ConnectionChecker getChecker() {
+
+    public void checkConnection() {
+        DefaultHttpClient client = new DefaultHttpClient();
+        if (credentials.provided()) {
+            UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(credentials.getUser(), credentials.getPassword());
+            //setAuthenticationPreemptive
+            client.getCredentialsProvider().setCredentials(AuthScope.ANY, usernamePasswordCredentials);
+        }
+        HttpGet method = new HttpGet(url);
         try {
-            return map.get(new URL(url).getProtocol());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Invalid URL: " + e);
+            HttpResponse response = client.execute(method);
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new RuntimeException(response.getStatusLine().toString());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            method.releaseConnection();
+            client.getConnectionManager().shutdown();
         }
     }
-
 
     public String getUrlWithBasicAuth() {
         String localUrl = this.url;
@@ -73,33 +77,4 @@ public class RepoUrl {
         return localUrl;
     }
 
-    public void checkConnection() {
-        getChecker().checkConnection(url, credentials);
-    }
-
-    public String forDisplay() {
-        return url;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        RepoUrl repoUrl = (RepoUrl) o;
-
-        if (!url.equals(repoUrl.url)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return url.hashCode();
-    }
-
-    public String getRepoId() {
-        return DigestUtils.md5Hex(url);
-
-    }
 }

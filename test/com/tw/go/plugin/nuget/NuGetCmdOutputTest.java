@@ -1,5 +1,6 @@
 package com.tw.go.plugin.nuget;
 
+import com.tw.go.plugin.nuget.config.RepoUrl;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, new RepoUrl(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add(ZIP_PKG);
@@ -45,7 +46,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, new RepoUrl(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add("No packages found.");
@@ -63,7 +64,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, new RepoUrl(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(ZIP_PKG);
         stdOut.add(VERSION);

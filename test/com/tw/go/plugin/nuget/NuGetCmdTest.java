@@ -1,5 +1,6 @@
 package com.tw.go.plugin.nuget;
 
+import com.tw.go.plugin.nuget.config.RepoUrl;
 import com.tw.go.plugin.util.StringUtil;
 import org.junit.After;
 import org.junit.Ignore;
@@ -38,7 +39,7 @@ public class NuGetCmdTest {
 
         ProcessOutput processOutput = new ProcessOutput(0, stdOut, new ArrayList<String>());
         when(processRunner.execute(expectedCommand)).thenReturn(processOutput);
-        NuGetCmdParams params = new NuGetCmdParams(repoid, new RepoUrl(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
         NuGetCmdOutput nuGetCmdOutput = mock(NuGetCmdOutput.class);
         when(nuGetFactory.createNuGetCmdOutputInstance(params, processOutput)).thenReturn(nuGetCmdOutput);
 
@@ -56,11 +57,12 @@ public class NuGetCmdTest {
         stdErr.add("err msg");
         when(processRunner.execute(Matchers.<String[]>any())).thenReturn(new ProcessOutput(1, null, stdErr));
         try {
-            new NuGetCmd(processRunner, new NuGetCmdParams("repoid", new RepoUrl("http://url",null, null), "spec"), null).execute();
+            new NuGetCmd(processRunner, new NuGetCmdParams("repoid", RepoUrl.create("http://url",null, null), "spec"), null).execute();
             fail("expected exception");
-        } catch (Exception e) {
-            assertThat(e.getMessage(), is("Error while querying repository with path 'http://url' and package spec 'spec'. Error Message: err msg"));
+        } catch (Exception success) {
+            assertThat(success.getMessage(), is("Error while querying repository with path 'http://url' and package spec 'spec'. Error Message: err msg"));
         }
+        verify(processRunner).execute(Matchers.<String[]>any());
     }
 
     @Test      @Ignore
@@ -68,7 +70,7 @@ public class NuGetCmdTest {
         final StringBuilder errors = new StringBuilder();
         Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
             public void uncaughtException(Thread t, Throwable e) {
-                errors.append(t.getName() + " : " + e.getMessage());
+                errors.append(t.getName()).append(" : ").append(e.getMessage());
             }
         };
         String repoId = UUID.randomUUID().toString();
@@ -98,7 +100,7 @@ public class NuGetCmdTest {
         }
 
         public void run() {
-            new NuGetCmd(new NuGetCmdParams(repoId, new RepoUrl(repoUrl, null, null), "7-Zip.CommandLine")).execute();
+            new NuGetCmd(new NuGetCmdParams(repoId, RepoUrl.create(repoUrl, null, null), "7-Zip.CommandLine")).execute();
         }
     }
 

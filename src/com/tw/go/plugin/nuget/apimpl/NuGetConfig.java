@@ -6,7 +6,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigur
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
-import com.tw.go.plugin.nuget.RepoUrl;
+import com.tw.go.plugin.nuget.config.RepoUrl;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -43,7 +43,7 @@ public class NuGetConfig implements PackageRepositoryConfiguration {
         String usernameValue = username == null? null: username.getValue();
         String passwordValue = password == null? null: password.getValue();
 
-        new RepoUrl(repositoryUrlConfiguration.getValue(), usernameValue, passwordValue).validate(errors);
+        RepoUrl.create(repositoryUrlConfiguration.getValue(), usernameValue, passwordValue).validate(errors);
         return !errors.hasErrors();
     }
 

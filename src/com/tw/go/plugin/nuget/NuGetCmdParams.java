@@ -1,5 +1,7 @@
 package com.tw.go.plugin.nuget;
 
+import com.tw.go.plugin.nuget.config.RepoUrl;
+
 public class NuGetCmdParams {
     private final String repoId;
     private final String packageSpec;

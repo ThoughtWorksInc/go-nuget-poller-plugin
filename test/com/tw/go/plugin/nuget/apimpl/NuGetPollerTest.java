@@ -3,7 +3,7 @@ package com.tw.go.plugin.nuget.apimpl;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigurations;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
-import com.tw.go.plugin.nuget.RepoUrl;
+import com.tw.go.plugin.nuget.config.RepoUrl;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 
@@ -28,7 +28,7 @@ public class NuGetPollerTest {
         PackageConfiguration packageConfiguration = new PackageConfiguration(NuGetConfig.PACKAGE_SPEC, spec);
         when(pkgCfgs.get(NuGetConfig.PACKAGE_SPEC)).thenReturn(packageConfiguration);
         PackageRevision dummyResult = new PackageRevision("1.0", new Date(),"user");
-        RepoUrl repoUrl = new RepoUrl(repoUrlStr, user, password);
+        RepoUrl repoUrl = RepoUrl.create(repoUrlStr, user, password);
         doReturn(dummyResult).when(spy).executeNuGetCmd(anyString(),eq(repoUrl), argThat(new SpecMatcher(spec)));
         spy.getLatestRevision(pkgCfgs, repoCfgs);
         verify(spy).executeNuGetCmd(anyString(),eq(repoUrl), argThat(new SpecMatcher(spec)));
