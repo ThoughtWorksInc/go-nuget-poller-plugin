@@ -15,7 +15,7 @@ public class ProcessRunnerTest {
 
     @Test
     public void shouldRunACommand() {
-        NuGetCmdOutput output = new ProcessRunner().execute(CHOICE_Y);
+        NuGetCmdOutput output = new ProcessRunner().execute(CHOICE_Y, false);
         assertThat(output.getStdOut().get(0), is("[Y,N]?Y"));
         assertThat(output.getReturnCode(), is(1));
     }
@@ -23,7 +23,7 @@ public class ProcessRunnerTest {
     @Test
     public void shouldThrowExceptionIfCommandThrowsAnException() {
         try {
-            new ProcessRunner().execute(new String[]{"doesNotExist"});
+            new ProcessRunner().execute(new String[]{"doesNotExist"}, false);
             fail("Should have thrown exception");
         } catch (Exception e) {
             assertThat(e instanceof RuntimeException, is(true));
@@ -33,7 +33,7 @@ public class ProcessRunnerTest {
 
     @Test
     public void shouldReturnErrorOutputIfCommandFails() {
-        NuGetCmdOutput output = new ProcessRunner().execute(CHOICE_INVALID);
+        NuGetCmdOutput output = new ProcessRunner().execute(CHOICE_INVALID, false);
         assertThat(output.getErrorDetail(), containsString("Error Message: ERROR: Invalid syntax."));
         assertThat(output.getReturnCode(), is(not(0)));
     }

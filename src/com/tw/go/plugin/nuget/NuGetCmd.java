@@ -25,11 +25,11 @@ public class NuGetCmd {
         String[] command = {"nuget", "list", params.getApplicablePackageSpec(), "-Verbosity", "detailed", "-Source", params.getRepoUrl()};
         NuGetCmdOutput nuGetCmdOutput;
         synchronized (params.getRepoId().intern()) {
-            nuGetCmdOutput = processRunner.execute(command);
+            nuGetCmdOutput = processRunner.execute(command, params.isHttp());
         }
         if (nuGetCmdOutput != null && nuGetCmdOutput.isSuccess()) {
-            nuGetCmdOutput.validate(params);
-            return nuGetCmdOutput.getPackageRevision();
+            nuGetCmdOutput.validateAndParse(params);
+            return nuGetCmdOutput.getPackageRevision(params.getRepoUrl());
         }
         LOGGER.info(nuGetCmdOutput.getErrorDetail());
         throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary()));

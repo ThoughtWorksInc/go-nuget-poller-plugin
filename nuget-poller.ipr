@@ -44,6 +44,10 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="ExportToHTMLSettings">
+    <option name="OPEN_IN_BROWSER" value="true" />
+    <option name="OUTPUT_DIRECTORY" value="d:\tmp" />
+  </component>
   <component name="IdProvider" IDEtalkID="71104E9D11FFF74B36BB8DF68C6DE214" />
   <component name="InspectionProjectProfileManager">
     <profiles>

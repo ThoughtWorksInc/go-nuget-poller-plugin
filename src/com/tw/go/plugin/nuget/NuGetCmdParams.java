@@ -22,11 +22,15 @@ public class NuGetCmdParams {
     }
 
     public String getApplicablePackageSpec() {
-        if (repoUrl.isWindowsShare()) return packageSpec;
+        if (!repoUrl.isHttp()) return packageSpec;
         return "Id:" + packageSpec;
     }
 
     public String getRepoUrl() {
         return repoUrl.forDisplay();
+    }
+
+    public boolean isHttp() {
+        return repoUrl.isHttp();
     }
 }

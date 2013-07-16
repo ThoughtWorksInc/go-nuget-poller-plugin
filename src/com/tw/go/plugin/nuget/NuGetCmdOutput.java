@@ -4,14 +4,18 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.tw.go.plugin.util.ListUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.join;
 
 public class NuGetCmdOutput {
+    public static final String URL_PREFIX = "GET ";
+    public static final Date MIN_DATE = new Date(0L);
     private int returnCode;
-    private List<String> stdOut;
+    protected List<String> stdOut;
     private List<String> stdErr;
+    private boolean http;
 
     public NuGetCmdOutput(int returnCode, List<String> stdOut, List<String> stdErr) {
         this.returnCode = returnCode;
@@ -72,8 +76,8 @@ public class NuGetCmdOutput {
         return stdOut.get(0).trim().startsWith("GET");
     }
 
-    boolean noPackagesFound() {
-        return "No packages found.".equals(stdOut.get(1));
+    protected boolean noPackagesFound() {
+        return "No packages found.".equals(stdOut.get(1).trim());
     }
 
     private String searchUrl;
@@ -81,41 +85,56 @@ public class NuGetCmdOutput {
     private boolean moreThanOnePackage;
     private NuGetPackage nugetPkg;
 
-    public void validate(NuGetCmdParams params) {
+    public void validateAndParse(NuGetCmdParams params) {
         if (isStdOutEmpty())
             throw new RuntimeException("Output is empty");
-        if (!startsWithGET())
+        http = params.isHttp();
+        if (http && !startsWithGET())
             throw new RuntimeException("Unrecognized output format. Expected GET <search-url> but was " + getStdOut().get(0));
         if (noPackagesFound())
             throw new RuntimeException(String.format("No package with spec %s found in source %s", params.getPackageSpec(), params.getRepoUrl()));
-        process(getStdOut());
+        parse();
         if (moreThanOnePackage)
             throw new RuntimeException(String.format("Given PACKAGE_SPEC (%s) resolves to more than one package on the repository: %s", params.getPackageSpec(), ListUtil.join(otherPackages)));
     }
 
-    private void process(List<String> stdOut) {
-        searchUrl = stdOut.get(0).trim().substring(4);
-        nugetPkg = new NuGetPackage(stdOut.get(1).trim(), stdOut.get(2).trim(), stdOut.get(3).trim());
+    private void parse() {
+        if(http) searchUrl = stdOut.get(0).trim().substring(URL_PREFIX.length());
+        nugetPkg = new NuGetPackage(getPackageTitle(), getPackageVersion(), getFirstLineOfDescription());
         List<Integer> pkgBoundaries = new ArrayList<Integer>();
         for (int i = 0; i < stdOut.size(); i++) {
             String line = stdOut.get(i);
-            if (line.trim().isEmpty()) {
+            if (line.trim().isEmpty()) { //assuming no empty lines in description
                 pkgBoundaries.add(i);
             }
-            if (i > 0 && line.trim().startsWith("GET ")) {
+            if (i > 0 && http && line.trim().startsWith(URL_PREFIX)) {
                 break;//TODO: test reporting of multiple packages
             }
         }
         if (pkgBoundaries.size() > 1) moreThanOnePackage = true;
         for (Integer lineNumber : pkgBoundaries) {
             if (lineNumber + 1 < stdOut.size()) {
-                otherPackages.add(stdOut.get(lineNumber + 1));
+                otherPackages.add(stdOut.get(lineNumber + 1));//should be fine for file and http
             }
         }
     }
 
-    public PackageRevision getPackageRevision() {
-        return nugetPkg.getPackageRevision(getFeedDocument());
+    protected String getFirstLineOfDescription() {
+        return stdOut.get(3).trim();
+    }
+
+    protected String getPackageVersion() {
+        return stdOut.get(2).trim();
+    }
+
+    protected String getPackageTitle() {
+        return stdOut.get(1).trim();
+    }
+
+    public PackageRevision getPackageRevision(String repoUrl) {
+        if(http) return nugetPkg.getPackageRevision(getFeedDocument());
+        //TODO: location separator wrong for file://
+        return nugetPkg.createPackageRevision(MIN_DATE, nugetPkg.getPackageLabel(), "unknown", repoUrl+"\\"+nugetPkg.getFilename());
     }
 
     private NuGetFeedDocument getFeedDocument() {

@@ -5,8 +5,6 @@ import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.util.StringUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import java.io.File;
-
 public abstract class RepoUrl {
     public static final String REPO_URL = "REPO_URL";
     public static final String USERNAME = "USERNAME";
@@ -69,7 +67,7 @@ public abstract class RepoUrl {
         return credentials != null && credentials.detected();
     }
 
-    public boolean isWindowsShare() {
-        return this instanceof WindowsUNCUrl;
+    public boolean isHttp() {
+        return this instanceof HttpRepoURL || this instanceof HttpsRepoURL ;
     }
 }

@@ -6,7 +6,7 @@ import org.w3c.dom.NodeList;
 import java.util.Date;
 
 public class NuGetPackage {
-    private static final String PACKAGE_DESCRIPTION = "DESCRIPTION";
+    public static final String PACKAGE_DESCRIPTION = "DESCRIPTION";
     public static final String PACKAGE_LOCATION = "LOCATION";
     private String pkgName;
     private String pkgVersion;
@@ -41,9 +41,17 @@ public class NuGetPackage {
         if (!pkgVersion.equals(version))
             throw new RuntimeException(String.format("Version mismatch for %s: %s, %s", pkgName, pkgVersion, version));
         Date publishedDate = feed.getPublishedDate(properties);
-        PackageRevision result = new PackageRevision(getPackageLabel(), publishedDate, feed.getAuthor());
-        result.addData(PACKAGE_LOCATION, feed.getPackageLocation());
+        return createPackageRevision(publishedDate, getPackageLabel(), feed.getAuthor(), feed.getPackageLocation());
+    }
+
+    PackageRevision createPackageRevision(Date publishedDate, String packageLabel, String author, String packageLocation) {
+        PackageRevision result = new PackageRevision(packageLabel, publishedDate, author);
+        result.addData(PACKAGE_LOCATION, packageLocation);
         result.addData(PACKAGE_DESCRIPTION, pkgDescription);
         return result;
+    }
+
+    public String getFilename() {
+        return pkgName+"."+pkgVersion+".nupkg";
     }
 }

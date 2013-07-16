@@ -37,13 +37,13 @@ public class NuGetCmdTest {
         stdOut.add("");
 
         NuGetCmdOutput nuGetCmdOutput = mock(NuGetCmdOutput.class);
-        when(processRunner.execute(expectedCommand)).thenReturn(nuGetCmdOutput);
+        when(processRunner.execute(expectedCommand, true)).thenReturn(nuGetCmdOutput);
         NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
         when(nuGetCmdOutput.isSuccess()).thenReturn(true);
         new NuGetCmd(processRunner, params).execute();
 
-        verify(processRunner).execute(expectedCommand);
-        verify(nuGetCmdOutput).getPackageRevision();
+        verify(processRunner).execute(expectedCommand, true);
+        verify(nuGetCmdOutput).getPackageRevision(repourl);
     }
 
     @Test
@@ -51,14 +51,14 @@ public class NuGetCmdTest {
         ProcessRunner processRunner = mock(ProcessRunner.class);
         ArrayList<String> stdErr = new ArrayList<String>();
         stdErr.add("err msg");
-        when(processRunner.execute(Matchers.<String[]>any())).thenReturn(new NuGetCmdOutput(1, null, stdErr));
+        when(processRunner.execute(Matchers.<String[]>any(), eq(true))).thenReturn(new NuGetCmdOutput(1, null, stdErr));
         try {
             new NuGetCmd(processRunner, new NuGetCmdParams("repoid", RepoUrl.create("http://url", null, null), "spec")).execute();
             fail("expected exception");
         } catch (Exception success) {
             assertThat(success.getMessage(), is("Error while querying repository with path 'http://url' and package spec 'spec'. Error Message: err msg"));
         }
-        verify(processRunner).execute(Matchers.<String[]>any());
+        verify(processRunner).execute(Matchers.<String[]>any(), eq(true));
     }
 
     @Test
