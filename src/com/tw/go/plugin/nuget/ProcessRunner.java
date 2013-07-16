@@ -15,7 +15,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 public class ProcessRunner {
     private static Logger LOGGER = Logger.getLoggerFor(ProcessRunner.class);
 
-    public ProcessOutput execute(String[] command) {
+    public NuGetCmdOutput execute(String[] command) {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         Process process = null;
         try {
@@ -27,7 +27,7 @@ public class ProcessRunner {
             launchThread(outputStream, process.getInputStream());
             int returnCode = getReturnCode(process);
             LOGGER.info("Nuget process for " + command[2] + " returning with exit code " + returnCode + " at " + new Date());
-            return new ProcessOutput(returnCode, outputStream, errorStream);
+            return new NuGetCmdOutput(returnCode, outputStream, errorStream);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {

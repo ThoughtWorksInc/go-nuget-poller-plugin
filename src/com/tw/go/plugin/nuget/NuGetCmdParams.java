@@ -20,8 +20,10 @@ public class NuGetCmdParams {
     public String getPackageSpec() {
         return packageSpec;
     }
-    public String getPackageSpecWithIdFilter() {
-        return "Id:"+packageSpec;
+
+    public String getApplicablePackageSpec() {
+        if (repoUrl.isWindowsShare()) return packageSpec;
+        return "Id:" + packageSpec;
     }
 
     public String getRepoUrl() {

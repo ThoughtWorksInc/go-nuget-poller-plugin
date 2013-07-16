@@ -15,7 +15,7 @@ public class ProcessRunnerTest {
 
     @Test
     public void shouldRunACommand() {
-        ProcessOutput output = new ProcessRunner().execute(CHOICE_Y);
+        NuGetCmdOutput output = new ProcessRunner().execute(CHOICE_Y);
         assertThat(output.getStdOut().get(0), is("[Y,N]?Y"));
         assertThat(output.getReturnCode(), is(1));
     }
@@ -33,7 +33,7 @@ public class ProcessRunnerTest {
 
     @Test
     public void shouldReturnErrorOutputIfCommandFails() {
-        ProcessOutput output = new ProcessRunner().execute(CHOICE_INVALID);
+        NuGetCmdOutput output = new ProcessRunner().execute(CHOICE_INVALID);
         assertThat(output.getErrorDetail(), containsString("Error Message: ERROR: Invalid syntax."));
         assertThat(output.getReturnCode(), is(not(0)));
     }

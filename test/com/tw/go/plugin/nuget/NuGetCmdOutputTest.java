@@ -16,7 +16,7 @@ public class NuGetCmdOutputTest {
     private final String DESCRIPTION = "  7-Zip is a file archiver with a high compression ratio.";
 
     @Test
-    public void shouldFailIfMultiplePackagesInOutput(){
+    public void shouldFailIfMultiplePackagesInOutput() {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
@@ -31,9 +31,9 @@ public class NuGetCmdOutputTest {
         stdOut.add("1.2");
         stdOut.add("desc");
         stdOut.add("");
-        ProcessOutput processOutput = new ProcessOutput(0, stdOut, new ArrayList<String>());
+        NuGetCmdOutput nuGetCmdOutput = new NuGetCmdOutput(0, stdOut, new ArrayList<String>());
         try {
-            new NuGetCmdOutput(params, processOutput);
+            nuGetCmdOutput.validate(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
             assertThat(e.getMessage(), is("Given PACKAGE_SPEC (7-Zip.CommandLine) resolves to more than one package on the repository: 2ndpkg"));
@@ -42,7 +42,7 @@ public class NuGetCmdOutputTest {
     }
 
     @Test
-    public void shouldFailIfNoPackageFound(){
+    public void shouldFailIfNoPackageFound() {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
@@ -50,9 +50,9 @@ public class NuGetCmdOutputTest {
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add("No packages found.");
-        ProcessOutput processOutput = new ProcessOutput(0, stdOut, new ArrayList<String>());
+        NuGetCmdOutput nuGetCmdOutput = new NuGetCmdOutput(0, stdOut, new ArrayList<String>());
         try {
-            new NuGetCmdOutput(params, processOutput);
+            nuGetCmdOutput.validate(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
             assertThat(e.getMessage(), is("No package with spec 7-Zip.CommandLine found in source http://localhost:4567/nuget/default"));
@@ -60,7 +60,7 @@ public class NuGetCmdOutputTest {
     }
 
     @Test
-    public void shouldFailIfOutputDoesNotBeginWithGet(){
+    public void shouldFailIfOutputDoesNotBeginWithGet() {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
@@ -70,9 +70,9 @@ public class NuGetCmdOutputTest {
         stdOut.add(VERSION);
         stdOut.add(DESCRIPTION);
         stdOut.add("");
-        ProcessOutput processOutput = new ProcessOutput(0, stdOut, new ArrayList<String>());
+        NuGetCmdOutput nuGetCmdOutput = new NuGetCmdOutput(0, stdOut, new ArrayList<String>());
         try {
-            new NuGetCmdOutput(params, processOutput);
+            nuGetCmdOutput.validate(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
             assertThat(e.getMessage(), is("Unrecognized output format. Expected GET <search-url> but was 7-Zip.CommandLine"));

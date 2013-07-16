@@ -6,22 +6,90 @@ import com.tw.go.plugin.util.ListUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.join;
+
 public class NuGetCmdOutput {
+    private int returnCode;
+    private List<String> stdOut;
+    private List<String> stdErr;
+
+    public NuGetCmdOutput(int returnCode, List<String> stdOut, List<String> stdErr) {
+        this.returnCode = returnCode;
+        this.stdOut = stdOut;
+        this.stdErr = stdErr;
+    }
+
+    public int getReturnCode() {
+        return returnCode;
+    }
+
+    public List<String> getStdOut() {
+        return stdOut;
+    }
+
+    public List<String> getStdErr() {
+        return stdErr;
+    }
+
+    public String getErrorDetail() {
+        if (hasErrors())
+            return "Error Message: " + join(getStdErr(), "\n");
+        return "";
+    }
+
+    public String getErrorSummary() {
+        if (hasErrors())
+            return "Error Message: " + stdErr.get(0);
+        return "";
+    }
+
+    public boolean isZeroReturnCode() {
+        return returnCode == 0;
+    }
+
+    public boolean hasOutput() {
+        return stdOut != null && !stdOut.isEmpty();
+    }
+
+    public boolean hasErrors() {
+        return stdErr != null && !stdErr.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return "NuGetCmdOutput{" +
+                "returnCode=" + returnCode +
+                ", stdOut=" + stdOut +
+                ", stdErr=" + stdErr +
+                '}';
+    }
+
+    public boolean isStdOutEmpty() {
+        return stdOut == null || stdOut.isEmpty();
+    }
+
+    boolean startsWithGET() {
+        return stdOut.get(0).trim().startsWith("GET");
+    }
+
+    boolean noPackagesFound() {
+        return "No packages found.".equals(stdOut.get(1));
+    }
+
     private String searchUrl;
     private List<String> otherPackages = new ArrayList<String>();
     private boolean moreThanOnePackage;
     private NuGetPackage nugetPkg;
 
-    public NuGetCmdOutput(NuGetCmdParams params, com.tw.go.plugin.nuget.ProcessOutput processOutput) {
-        List<String> stdOut = processOutput.getStdOut();
-        if(stdOut == null || stdOut.isEmpty())
+    public void validate(NuGetCmdParams params) {
+        if (isStdOutEmpty())
             throw new RuntimeException("Output is empty");
-        if(!stdOut.get(0).trim().startsWith("GET"))
-            throw new RuntimeException("Unrecognized output format. Expected GET <search-url> but was "+stdOut.get(0));
-        if("No packages found.".equals(stdOut.get(1)))
+        if (!startsWithGET())
+            throw new RuntimeException("Unrecognized output format. Expected GET <search-url> but was " + getStdOut().get(0));
+        if (noPackagesFound())
             throw new RuntimeException(String.format("No package with spec %s found in source %s", params.getPackageSpec(), params.getRepoUrl()));
-        process(stdOut);
-        if(moreThanOnePackage)
+        process(getStdOut());
+        if (moreThanOnePackage)
             throw new RuntimeException(String.format("Given PACKAGE_SPEC (%s) resolves to more than one package on the repository: %s", params.getPackageSpec(), ListUtil.join(otherPackages)));
     }
 
@@ -31,16 +99,16 @@ public class NuGetCmdOutput {
         List<Integer> pkgBoundaries = new ArrayList<Integer>();
         for (int i = 0; i < stdOut.size(); i++) {
             String line = stdOut.get(i);
-            if (line.trim().isEmpty()){
+            if (line.trim().isEmpty()) {
                 pkgBoundaries.add(i);
             }
-            if (i>0 && line.trim().startsWith("GET ")) {
-                break;
+            if (i > 0 && line.trim().startsWith("GET ")) {
+                break;//TODO: test reporting of multiple packages
             }
         }
-        if(pkgBoundaries.size() > 1)  moreThanOnePackage=true;
-        for(Integer lineNumber : pkgBoundaries){
-            if(lineNumber+1 < stdOut.size()){
+        if (pkgBoundaries.size() > 1) moreThanOnePackage = true;
+        for (Integer lineNumber : pkgBoundaries) {
+            if (lineNumber + 1 < stdOut.size()) {
                 otherPackages.add(stdOut.get(lineNumber + 1));
             }
         }
@@ -52,5 +120,9 @@ public class NuGetCmdOutput {
 
     private NuGetFeedDocument getFeedDocument() {
         return new NuGetFeedDocument(new Feed(searchUrl).download());
+    }
+
+    boolean isSuccess() {
+        return isZeroReturnCode() && hasOutput() && !hasErrors();
     }
 }

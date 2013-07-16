@@ -22,13 +22,12 @@ public class NuGetCmdTest {
     private final String DESCRIPTION = "  7-Zip is a file archiver with a high compression ratio.";
 
     @Test
-    public void executeShouldCallProcessOnNugetIfExecSucceeds() {
+    public void executeShouldGetPackageRevisionIfExecSucceeds() {
         ProcessRunner processRunner = mock(ProcessRunner.class);
-        NuGetFactory nuGetFactory = mock(NuGetFactory.class);
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        String[] expectedCommand = {"nuget","list","Id:"+spec,"-Verbosity","detailed","-Source",repourl};
+        String[] expectedCommand = {"nuget", "list", "Id:" + spec, "-Verbosity", "detailed", "-Source", repourl};
 
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
@@ -37,16 +36,13 @@ public class NuGetCmdTest {
         stdOut.add(DESCRIPTION);
         stdOut.add("");
 
-        ProcessOutput processOutput = new ProcessOutput(0, stdOut, new ArrayList<String>());
-        when(processRunner.execute(expectedCommand)).thenReturn(processOutput);
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
         NuGetCmdOutput nuGetCmdOutput = mock(NuGetCmdOutput.class);
-        when(nuGetFactory.createNuGetCmdOutputInstance(params, processOutput)).thenReturn(nuGetCmdOutput);
-
-        new NuGetCmd(processRunner, params,nuGetFactory).execute();
+        when(processRunner.execute(expectedCommand)).thenReturn(nuGetCmdOutput);
+        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        when(nuGetCmdOutput.isSuccess()).thenReturn(true);
+        new NuGetCmd(processRunner, params).execute();
 
         verify(processRunner).execute(expectedCommand);
-        verify(nuGetFactory).createNuGetCmdOutputInstance(params, processOutput);
         verify(nuGetCmdOutput).getPackageRevision();
     }
 
@@ -55,9 +51,9 @@ public class NuGetCmdTest {
         ProcessRunner processRunner = mock(ProcessRunner.class);
         ArrayList<String> stdErr = new ArrayList<String>();
         stdErr.add("err msg");
-        when(processRunner.execute(Matchers.<String[]>any())).thenReturn(new ProcessOutput(1, null, stdErr));
+        when(processRunner.execute(Matchers.<String[]>any())).thenReturn(new NuGetCmdOutput(1, null, stdErr));
         try {
-            new NuGetCmd(processRunner, new NuGetCmdParams("repoid", RepoUrl.create("http://url",null, null), "spec"), null).execute();
+            new NuGetCmd(processRunner, new NuGetCmdParams("repoid", RepoUrl.create("http://url", null, null), "spec")).execute();
             fail("expected exception");
         } catch (Exception success) {
             assertThat(success.getMessage(), is("Error while querying repository with path 'http://url' and package spec 'spec'. Error Message: err msg"));
@@ -65,7 +61,8 @@ public class NuGetCmdTest {
         verify(processRunner).execute(Matchers.<String[]>any());
     }
 
-    @Test      @Ignore
+    @Test
+    @Ignore
     public void shouldHandleMultipleThreads() throws InterruptedException {
         final StringBuilder errors = new StringBuilder();
         Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {

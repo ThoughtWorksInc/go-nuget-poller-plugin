@@ -227,9 +227,7 @@
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
     <library name="go-plugin-api">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/go-plugin-api-13.3.0.jar!/" />
-      </CLASSES>
+      <CLASSES />
       <JAVADOC />
       <SOURCES />
     </library>
