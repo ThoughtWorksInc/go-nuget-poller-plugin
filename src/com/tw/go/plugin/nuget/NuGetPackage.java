@@ -1,7 +1,6 @@
 package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
-import org.w3c.dom.NodeList;
 
 import java.util.Date;
 
@@ -34,19 +33,19 @@ public class NuGetPackage {
 
 
     public PackageRevision getPackageRevision(NuGetFeedDocument feed) {
-        NodeList entries = feed.getEntries();
-        if (entries.getLength() > 1)
-            throw new RuntimeException(String.format("Multiple entries in feed for %s %s", pkgName, pkgVersion));
-
-        String title = feed.getEntryTitle(entries);
+        rejectIfMultipleEntries(feed);
+        String title = feed.getEntryTitle();
         if (!pkgName.equals(title))
             throw new RuntimeException(String.format("Package name mismatch for %s: %s,", pkgName, title));
-        NodeList properties = feed.getProperties();
-        String version = feed.getProperty(properties, "Version");
+        String version = feed.getPackageVersion();
         if (!pkgVersion.equals(version))
             throw new RuntimeException(String.format("Version mismatch for %s: %s, %s", pkgName, pkgVersion, version));
-        Date publishedDate = feed.getPublishedDate(properties);
-        return createPackageRevision(publishedDate, getPackageLabel(), feed.getAuthor(), feed.getPackageLocation());
+        return createPackageRevision(feed.getPublishedDate(), getPackageLabel(), feed.getAuthor(), feed.getPackageLocation());
+    }
+
+    private void rejectIfMultipleEntries(NuGetFeedDocument feed) {
+        if (feed.getEntries().getLength() > 1)
+            throw new RuntimeException(String.format("Multiple entries in feed for %s %s", pkgName, pkgVersion));
     }
 
     PackageRevision createPackageRevision(Date publishedDate, String packageLabel, String author, String packageLocation) {

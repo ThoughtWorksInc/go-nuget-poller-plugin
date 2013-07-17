@@ -5,7 +5,9 @@ import com.tw.go.plugin.nuget.config.RepoUrl;
 import com.tw.go.plugin.util.StringUtil;
 import org.junit.After;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Matchers;
 
 import java.util.ArrayList;
@@ -115,6 +117,21 @@ public class NuGetCmdTest {
         assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is("\\\\insrinaray\\nuget-local-repo\\RouteMagic.1.2.nupkg"));
         result = new NuGetCmd(new NuGetCmdParams("some-repo-id", RepoUrl.create("https://nuget.org/api/v2", null, null), "RouteMagic.Mvc")).execute();
         assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/RouteMagic.Mvc/1.2"));
+    }
+
+    @Test
+    public void shouldRejectMultipleEntriesInFindPackagesByIdWithoutFallingBackToExec(){
+        //seems like FindPackagesById does exact match
+        new NuGetCmd(new NuGetCmdParams("some-repo-id", RepoUrl.create("https://nuget.org/api/v2/", null, null), "RouteMagic")).execute();
+    }
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
+    @Test
+    public void shouldFailIfNoPackagesFoundInFindPackagesById(){
+        expectedEx.expect(NuGetException.class);
+        expectedEx.expectMessage("No such package found");
+        new NuGetCmd(new NuGetCmdParams("some-repo-id", RepoUrl.create("https://nuget.org/api/v2/", null, null), "Rou")).execute();
     }
 
     @After

@@ -22,21 +22,37 @@ public class NuGetCmd {
     }
 
     public PackageRevision execute() {
-        String[] command = {"nuget", "list", params.getApplicablePackageSpec(), "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
-        NuGetCmdOutput nuGetCmdOutput;
-        synchronized (params.getRepoId().intern()) {
-            nuGetCmdOutput = processRunner.execute(command, params.isHttp());
+        try {
+            if(!params.isHttp()) throw new RuntimeException("please goto catch. ugh");
+            return findPackagesByIdApi();
+        } catch (RuntimeException apiFail) {
+            if(apiFail instanceof NuGetException) throw apiFail;
+            String[] command = {"nuget", "list", params.getApplicablePackageSpec(),
+                    "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
+            NuGetCmdOutput nuGetCmdOutput;
+            synchronized (params.getRepoId().intern()) {
+                nuGetCmdOutput = processRunner.execute(command, params.isHttp());
+            }
+            if (nuGetCmdOutput.isSuccess()) {
+                nuGetCmdOutput.validateAndParse(params);
+                return nuGetCmdOutput.getPackageRevision(params.getRepoUrl());
+            }
+            LOGGER.info(nuGetCmdOutput.getErrorDetail());
+            throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary()));
         }
-        if (nuGetCmdOutput != null && nuGetCmdOutput.isSuccess()) {
-            nuGetCmdOutput.validateAndParse(params);
-            return nuGetCmdOutput.getPackageRevision(params.getRepoUrl());
-        }
-        LOGGER.info(nuGetCmdOutput.getErrorDetail());
-        throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary()));
     }
 
+    private PackageRevision findPackagesByIdApi() {
+        String url = String.format("%sFindPackagesById()?$filter=IsLatestVersion&id='%s'",
+                params.getRepoUrlStrWithTrailingSlash(),params.getPackageSpec());
+        LOGGER.info(url);
+        return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision();
+    }
+
+
     private String getErrorMessage(String message) {
-        return format("Error while querying repository with path '%s' and package spec '%s'. %s", params.getRepoUrlStr(), params.getPackageSpec(), message);
+        return format("Error while querying repository with path '%s' and package spec '%s'. %s",
+                params.getRepoUrlStr(), params.getPackageSpec(), message);
     }
 
 }

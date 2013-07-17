@@ -36,4 +36,9 @@ public class NuGetCmdParams {
     public boolean isHttp() {
         return repoUrl.isHttp();
     }
+
+    public String getRepoUrlStrWithTrailingSlash() {
+        if(repoUrl.forDisplay().endsWith("/")) return repoUrl.forDisplay();
+        return repoUrl.forDisplay()+"/";
+    }
 }

@@ -9,6 +9,8 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.params.CoreConnectionPNames;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -19,6 +21,13 @@ public class HttpRepoURL extends RepoUrl {
 
     public HttpRepoURL(String url, String user, String password) {
         super(url, user, password);
+    }
+
+    public static DefaultHttpClient getHttpClient() {
+        DefaultHttpClient client = new DefaultHttpClient();
+        client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,5*1000);
+        client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3,false));
+        return client;
     }
 
     public void validate(Errors errors) {
