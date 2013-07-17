@@ -12,6 +12,7 @@ import static org.junit.Assert.fail;
 
 public class NuGetCmdOutputTest {
     private final String GET_CMD = "GET http://nuget.org/api/v2/Search()?$filter=IsLatestVersion&$orderby=Id&$skip=0&$top=30&searchTerm='7-Zip.CommandLine'&targetFramework=''&includePrerelease=false";
+    private final String GET_CMD2 = "GET http://nuget.org/api/v2/Search()?$filter=IsLatestVersion&$orderby=Id&$skip=30&$top=30&searchTerm='7-Zip.CommandLine'&targetFramework=''&includePrerelease=false";
     private final String ZIP_PKG = "7-Zip.CommandLine";
     private final String VERSION = "  9.20.0";
     private final String DESCRIPTION = "  7-Zip is a file archiver with a high compression ratio.";
@@ -38,7 +39,34 @@ public class NuGetCmdOutputTest {
             nuGetCmdOutput.validateAndParse(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("Given PACKAGE_SPEC (7-Zip.CommandLine) resolves to more than one package on the repository: 2ndpkg"));
+            assertThat(e.getMessage(), is("Given PACKAGE_SPEC (7-Zip.CommandLine) resolves to more than one package on the repository: 7-Zip.CommandLine, 2ndpkg"));
+        }
+
+    }
+    @Test
+
+    public void shouldFailIfMultipleGETsInOutput() {
+        String repoid = "repoid";
+        String repourl = "http://localhost:4567/nuget/default";
+        String spec = "7-Zip.CommandLine";
+        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        ArrayList<String> stdOut = new ArrayList<String>();
+        stdOut.add(GET_CMD);
+        stdOut.add(ZIP_PKG);
+        stdOut.add(VERSION);
+        stdOut.add(DESCRIPTION);
+        stdOut.add("");
+        stdOut.add(GET_CMD2);
+        stdOut.add("2ndpkg");
+        stdOut.add("1.2");
+        stdOut.add("desc");
+        stdOut.add("");
+        NuGetCmdOutput nuGetCmdOutput = new NuGetCmdOutput(0, stdOut, new ArrayList<String>());
+        try {
+            nuGetCmdOutput.validateAndParse(params);
+            fail("should have thrown exception");
+        } catch (RuntimeException e) {
+            assertThat(e.getMessage(), is("Found more than one line starting with GET\nline0:\nGET http://nuget.org/api/v2/Search()?$filter=IsLatestVersion&$orderby=Id&$skip=0&$top=30&searchTerm='7-Zip.CommandLine'&targetFramework=''&includePrerelease=false\nline5:\nGET http://nuget.org/api/v2/Search()?$filter=IsLatestVersion&$orderby=Id&$skip=30&$top=30&searchTerm='7-Zip.CommandLine'&targetFramework=''&includePrerelease=false"));
         }
 
     }
@@ -63,7 +91,7 @@ public class NuGetCmdOutputTest {
             nuGetCmdOutput.validateAndParse(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("Given PACKAGE_SPEC (7-Zip.CommandLine) resolves to more than one package on the repository: 2ndpkg"));
+            assertThat(e.getMessage(), is("Given PACKAGE_SPEC (7-Zip.CommandLine) resolves to more than one package on the repository: 7-Zip.CommandLine, 2ndpkg"));
         }
 
     }
@@ -125,20 +153,21 @@ public class NuGetCmdOutputTest {
     @Test
     public void shouldReturnCurtailedPackageRevisionForNonHttp() {
         String repoid = "repoid";
-        String repourl = "\\\\host\\nuget-repo";
+        String repourlStr = "\\\\host\\nuget-repo";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        RepoUrl repoUrl = RepoUrl.create(repourlStr, null, null);
+        NuGetCmdParams params = new NuGetCmdParams(repoid, repoUrl, spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(ZIP_PKG);
         stdOut.add(VERSION);
         stdOut.add(DESCRIPTION);
         NuGetCmdOutput nuGetCmdOutput = new NuGetCmdOutputNonHttp(0, stdOut, new ArrayList<String>());
         nuGetCmdOutput.validateAndParse(params);
-        PackageRevision result = nuGetCmdOutput.getPackageRevision(repourl);
+        PackageRevision result = nuGetCmdOutput.getPackageRevision(repoUrl);
         assertThat(result.getUser(), is("unknown"));
         assertThat(result.getRevision(), is(ZIP_PKG+"-"+VERSION.trim()));
         assertThat(result.getTimestamp(), is(NuGetCmdOutput.MIN_DATE));
-        assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is(repourl+"\\"+ZIP_PKG+"."+VERSION.trim()+".nupkg"));
+        assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is(repourlStr+"\\"+ZIP_PKG+"."+VERSION.trim()+".nupkg"));
         assertThat(result.getDataFor(NuGetPackage.PACKAGE_DESCRIPTION), is(DESCRIPTION.trim()));
     }
 }

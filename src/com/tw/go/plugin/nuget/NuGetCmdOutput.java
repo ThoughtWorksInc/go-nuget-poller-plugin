@@ -1,6 +1,8 @@
 package com.tw.go.plugin.nuget;
 
+import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.tw.go.plugin.nuget.config.RepoUrl;
 import com.tw.go.plugin.util.ListUtil;
 
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.List;
 import static org.apache.commons.lang3.StringUtils.join;
 
 public class NuGetCmdOutput {
+    private static Logger LOGGER = Logger.getLoggerFor(NuGetCmdOutput.class);
+
     public static final String URL_PREFIX = "GET ";
     public static final Date MIN_DATE = new Date(0L);
     private int returnCode;
@@ -92,14 +96,15 @@ public class NuGetCmdOutput {
         if (http && !startsWithGET())
             throw new RuntimeException("Unrecognized output format. Expected GET <search-url> but was " + getStdOut().get(0));
         if (noPackagesFound())
-            throw new RuntimeException(String.format("No package with spec %s found in source %s", params.getPackageSpec(), params.getRepoUrl()));
+            throw new RuntimeException(String.format("No package with spec %s found in source %s", params.getPackageSpec(), params.getRepoUrlStr()));
         parse();
         if (moreThanOnePackage)
-            throw new RuntimeException(String.format("Given PACKAGE_SPEC (%s) resolves to more than one package on the repository: %s", params.getPackageSpec(), ListUtil.join(otherPackages)));
+            throw new RuntimeException(String.format("Given PACKAGE_SPEC (%s) resolves to more than one package on the repository: %s, %s",
+                    params.getPackageSpec(), nugetPkg.getPackageName(), ListUtil.join(otherPackages)));
     }
 
     private void parse() {
-        if(http) searchUrl = stdOut.get(0).trim().substring(URL_PREFIX.length());
+        if (http) searchUrl = stdOut.get(0).trim().substring(URL_PREFIX.length());
         nugetPkg = new NuGetPackage(getPackageTitle(), getPackageVersion(), getFirstLineOfDescription());
         List<Integer> pkgBoundaries = new ArrayList<Integer>();
         for (int i = 0; i < stdOut.size(); i++) {
@@ -108,7 +113,9 @@ public class NuGetCmdOutput {
                 pkgBoundaries.add(i);
             }
             if (i > 0 && http && line.trim().startsWith(URL_PREFIX)) {
-                break;//TODO: test reporting of multiple packages
+                String message = String.format("Found more than one line starting with GET\nline0:\nGET %s\nline%s:\n%s", searchUrl,i, line);
+                LOGGER.warn(message);
+                throw new RuntimeException(message);
             }
         }
         if (pkgBoundaries.size() > 1) moreThanOnePackage = true;
@@ -131,10 +138,10 @@ public class NuGetCmdOutput {
         return stdOut.get(1).trim();
     }
 
-    public PackageRevision getPackageRevision(String repoUrl) {
-        if(http) return nugetPkg.getPackageRevision(getFeedDocument());
-        //TODO: location separator wrong for file://
-        return nugetPkg.createPackageRevision(MIN_DATE, nugetPkg.getPackageLabel(), "unknown", repoUrl+"\\"+nugetPkg.getFilename());
+    public PackageRevision getPackageRevision(RepoUrl repoUrl) {
+        if (http) return nugetPkg.getPackageRevision(getFeedDocument());
+        String separator = repoUrl.getSeparator();
+        return nugetPkg.createPackageRevision(MIN_DATE, nugetPkg.getPackageLabel(), "unknown", repoUrl.forDisplay() + separator + nugetPkg.getFilename());
     }
 
     private NuGetFeedDocument getFeedDocument() {

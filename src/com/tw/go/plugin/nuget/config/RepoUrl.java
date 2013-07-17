@@ -70,4 +70,8 @@ public abstract class RepoUrl {
     public boolean isHttp() {
         return this instanceof HttpRepoURL || this instanceof HttpsRepoURL ;
     }
+
+    public String getSeparator() {
+        return "/";
+    }
 }

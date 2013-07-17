@@ -14,4 +14,9 @@ public class WindowsUNCUrl extends RepoUrl {
     @Override
     public void checkConnection() {
     }
+
+    @Override
+    public String getSeparator() {
+        return "\\";
+    }
 }

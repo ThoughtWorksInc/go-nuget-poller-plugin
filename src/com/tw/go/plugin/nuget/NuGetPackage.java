@@ -8,6 +8,11 @@ import java.util.Date;
 public class NuGetPackage {
     public static final String PACKAGE_DESCRIPTION = "DESCRIPTION";
     public static final String PACKAGE_LOCATION = "LOCATION";
+
+    public String getPackageName() {
+        return pkgName;
+    }
+
     private String pkgName;
     private String pkgVersion;
     private String pkgDescription;

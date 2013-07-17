@@ -1,5 +1,6 @@
 package com.tw.go.plugin.nuget;
 
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.tw.go.plugin.nuget.config.RepoUrl;
 import com.tw.go.plugin.util.StringUtil;
 import org.junit.After;
@@ -25,9 +26,9 @@ public class NuGetCmdTest {
     public void executeShouldGetPackageRevisionIfExecSucceeds() {
         ProcessRunner processRunner = mock(ProcessRunner.class);
         String repoid = "repoid";
-        String repourl = "http://localhost:4567/nuget/default";
+        String repourlStr = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        String[] expectedCommand = {"nuget", "list", "Id:" + spec, "-Verbosity", "detailed", "-Source", repourl};
+        String[] expectedCommand = {"nuget", "list", "Id:" + spec, "-Verbosity", "detailed", "-Source", repourlStr};
 
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
@@ -38,12 +39,13 @@ public class NuGetCmdTest {
 
         NuGetCmdOutput nuGetCmdOutput = mock(NuGetCmdOutput.class);
         when(processRunner.execute(expectedCommand, true)).thenReturn(nuGetCmdOutput);
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        RepoUrl repoUrl = RepoUrl.create(repourlStr, null, null);
+        NuGetCmdParams params = new NuGetCmdParams(repoid, repoUrl, spec);
         when(nuGetCmdOutput.isSuccess()).thenReturn(true);
         new NuGetCmd(processRunner, params).execute();
 
         verify(processRunner).execute(expectedCommand, true);
-        verify(nuGetCmdOutput).getPackageRevision(repourl);
+        verify(nuGetCmdOutput).getPackageRevision(repoUrl);
     }
 
     @Test
@@ -93,12 +95,26 @@ public class NuGetCmdTest {
 
         CommandThread(String repoId) {
             this.repoId = repoId;
-            repoUrl = "file://d:/tmp/nuget-local-repo";//"http://localhost:4567/nuget/default";
+//            repoUrl = "https://nuget.org/api/v2";
+            repoUrl = "file://d:/tmp/nuget-local-repo";
         }
 
         public void run() {
-            new NuGetCmd(new NuGetCmdParams(repoId, RepoUrl.create(repoUrl, null, null), "7-Zip.CommandLine")).execute();
+            PackageRevision result = new NuGetCmd(new NuGetCmdParams(repoId, RepoUrl.create(repoUrl, null, null), "RouteMagic")).execute();
+            System.out.println(result.getRevision());
+            System.out.println(result.getDataFor(NuGetPackage.PACKAGE_LOCATION));
+            System.out.println(result.getDataFor(NuGetPackage.PACKAGE_DESCRIPTION));
         }
+    }
+
+    @Test
+    public void shouldReportLocationCorrectly(){
+        PackageRevision result = new NuGetCmd(new NuGetCmdParams("some-repo-id", RepoUrl.create("file://d:/tmp/nuget-local-repo", null, null), "RouteMagic")).execute();
+        assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is("file://d:/tmp/nuget-local-repo/RouteMagic.1.2.nupkg"));
+        result = new NuGetCmd(new NuGetCmdParams("some-repo-id", RepoUrl.create("\\\\insrinaray\\nuget-local-repo", null, null), "RouteMagic")).execute();
+        assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is("\\\\insrinaray\\nuget-local-repo\\RouteMagic.1.2.nupkg"));
+        result = new NuGetCmd(new NuGetCmdParams("some-repo-id", RepoUrl.create("https://nuget.org/api/v2", null, null), "RouteMagic.Mvc")).execute();
+        assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/RouteMagic.Mvc/1.2"));
     }
 
     @After

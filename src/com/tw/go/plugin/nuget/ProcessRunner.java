@@ -45,7 +45,7 @@ public class ProcessRunner {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                LOGGER.info("enter read");
+                LOGGER.debug("enter read");
                 BufferedReader br = new BufferedReader(new InputStreamReader(readFromStream));
                 String line;
                 try {
@@ -87,7 +87,7 @@ public class ProcessRunner {
         }
 
         public void run() {
-            LOGGER.info("in worker run");
+            LOGGER.debug("in worker run");
             try {
                 exit = process.waitFor();
             } catch (InterruptedException ignore) {

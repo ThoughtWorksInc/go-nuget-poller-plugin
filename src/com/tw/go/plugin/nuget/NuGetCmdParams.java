@@ -26,8 +26,11 @@ public class NuGetCmdParams {
         return "Id:" + packageSpec;
     }
 
-    public String getRepoUrl() {
+    public String getRepoUrlStr() {
         return repoUrl.forDisplay();
+    }
+    public RepoUrl getRepoUrl() {
+        return repoUrl;
     }
 
     public boolean isHttp() {

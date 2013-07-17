@@ -22,7 +22,7 @@ public class NuGetCmd {
     }
 
     public PackageRevision execute() {
-        String[] command = {"nuget", "list", params.getApplicablePackageSpec(), "-Verbosity", "detailed", "-Source", params.getRepoUrl()};
+        String[] command = {"nuget", "list", params.getApplicablePackageSpec(), "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
         NuGetCmdOutput nuGetCmdOutput;
         synchronized (params.getRepoId().intern()) {
             nuGetCmdOutput = processRunner.execute(command, params.isHttp());
@@ -36,7 +36,7 @@ public class NuGetCmd {
     }
 
     private String getErrorMessage(String message) {
-        return format("Error while querying repository with path '%s' and package spec '%s'. %s", params.getRepoUrl(), params.getPackageSpec(), message);
+        return format("Error while querying repository with path '%s' and package spec '%s'. %s", params.getRepoUrlStr(), params.getPackageSpec(), message);
     }
 
 }
