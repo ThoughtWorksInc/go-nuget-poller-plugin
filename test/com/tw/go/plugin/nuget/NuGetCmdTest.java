@@ -34,8 +34,8 @@ public class NuGetCmdTest {
         ProcessRunner processRunner = mock(ProcessRunner.class);
         String repoid = "repoid";
         String repourlStr = "http://localhost:4567/nuget/default";
-        String spec = "7-Zip.CommandLine";
-        String[] expectedCommand = {"nuget", "list", "Id:" + spec, "-Verbosity", "detailed", "-Source", repourlStr};
+        String packageId = "7-Zip.CommandLine";
+        String[] expectedCommand = {"nuget", "list", "Id:" + packageId, "-Verbosity", "detailed", "-Source", repourlStr};
 
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
@@ -47,7 +47,7 @@ public class NuGetCmdTest {
         NuGetCmdOutput nuGetCmdOutput = mock(NuGetCmdOutput.class);
         when(processRunner.execute(expectedCommand, true)).thenReturn(nuGetCmdOutput);
         RepoUrl repoUrl = RepoUrl.create(repourlStr, null, null);
-        NuGetCmdParams params = new NuGetCmdParams(repoUrl, spec);
+        NuGetCmdParams params = new NuGetCmdParams(repoUrl, packageId);
         when(nuGetCmdOutput.isSuccess()).thenReturn(true);
         new NuGetCmd(processRunner, params).execute();
 
@@ -62,10 +62,10 @@ public class NuGetCmdTest {
         stdErr.add("err msg");
         when(processRunner.execute(Matchers.<String[]>any(), eq(true))).thenReturn(new NuGetCmdOutput(1, null, stdErr));
         try {
-            new NuGetCmd(processRunner, new NuGetCmdParams(RepoUrl.create("http://url", null, null), "spec")).execute();
+            new NuGetCmd(processRunner, new NuGetCmdParams(RepoUrl.create("http://url", null, null), "wix")).execute();
             fail("expected exception");
         } catch (Exception success) {
-            assertThat(success.getMessage(), is("Error while querying repository with path 'http://url' and package spec 'spec'. Error Message: err msg"));
+            assertThat(success.getMessage(), is("Error while querying repository with path 'http://url' and packageId 'wix'. Error Message: err msg"));
         }
         verify(processRunner).execute(Matchers.<String[]>any(), eq(true));
     }

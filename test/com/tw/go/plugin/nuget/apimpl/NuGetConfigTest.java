@@ -12,7 +12,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tw.go.plugin.nuget.apimpl.NuGetConfig.PACKAGE_SPEC;
+import static com.tw.go.plugin.nuget.apimpl.NuGetConfig.PACKAGE_ID;
 import static com.tw.go.plugin.nuget.config.RepoUrl.REPO_URL;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
@@ -50,9 +50,9 @@ public class NuGetConfigTest {
     @Test
     public void shouldGetPackageConfiguration() {
         PackageConfigurations configurations = nuGetConfig.getPackageConfiguration();
-        assertThat(configurations.get(PACKAGE_SPEC), is(notNullValue()));
-        assertThat(configurations.get(NuGetConfig.PACKAGE_SPEC).getOption(PackageConfiguration.DISPLAY_NAME), is("Package Spec"));
-        assertThat(configurations.get(NuGetConfig.PACKAGE_SPEC).getOption(PackageConfiguration.DISPLAY_ORDER), is(0));
+        assertThat(configurations.get(PACKAGE_ID), is(notNullValue()));
+        assertThat(configurations.get(NuGetConfig.PACKAGE_ID).getOption(PackageConfiguration.DISPLAY_NAME), is("Package Id"));
+        assertThat(configurations.get(NuGetConfig.PACKAGE_ID).getOption(PackageConfiguration.DISPLAY_ORDER), is(0));
     }
 
     @Test
@@ -66,11 +66,11 @@ public class NuGetConfigTest {
 
     @Test
     public void shouldCorrectlyCheckIfPackageConfigurationValid() {
-        assertForPackageConfigurationErrors(new PackageConfigurations(), asList(new ValidationError(PACKAGE_SPEC, "Package spec not specified")), false);
-        assertForPackageConfigurationErrors(configurations(PACKAGE_SPEC, null), asList(new ValidationError(PACKAGE_SPEC, "Package spec is null")), false);
-        assertForPackageConfigurationErrors(configurations(PACKAGE_SPEC, ""), asList(new ValidationError(PACKAGE_SPEC, "Package spec is empty")), false);
-        assertForPackageConfigurationErrors(configurations(PACKAGE_SPEC, "go-age?nt-*"), asList(new ValidationError(PACKAGE_SPEC, "Package spec [go-age?nt-*] is invalid")), false);
-        assertForPackageConfigurationErrors(configurations(PACKAGE_SPEC, "go-agent"), new ArrayList<ValidationError>(), true);
+        assertForPackageConfigurationErrors(new PackageConfigurations(), asList(new ValidationError(PACKAGE_ID, "Package id not specified")), false);
+        assertForPackageConfigurationErrors(configurations(PACKAGE_ID, null), asList(new ValidationError(PACKAGE_ID, "Package id is null")), false);
+        assertForPackageConfigurationErrors(configurations(PACKAGE_ID, ""), asList(new ValidationError(PACKAGE_ID, "Package id is empty")), false);
+        assertForPackageConfigurationErrors(configurations(PACKAGE_ID, "go-age?nt-*"), asList(new ValidationError(PACKAGE_ID, "Package id [go-age?nt-*] is invalid")), false);
+        assertForPackageConfigurationErrors(configurations(PACKAGE_ID, "go-agent"), new ArrayList<ValidationError>(), true);
     }
 
     private void assertForRepositoryConfigurationErrors(PackageConfigurations repositoryConfigurations, List<ValidationError> expectedErrors, boolean expectedValidationResult) {

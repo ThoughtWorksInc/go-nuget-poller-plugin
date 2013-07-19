@@ -96,11 +96,11 @@ public class NuGetCmdOutput {
         if (http && !startsWithGET())
             throw new RuntimeException("Unrecognized output format. Expected GET <search-url> but was " + getStdOut().get(0));
         if (noPackagesFound())
-            throw new RuntimeException(String.format("No package with spec %s found in source %s", params.getPackageSpec(), params.getRepoUrlStr()));
+            throw new RuntimeException(String.format("No package with id %s found in source %s", params.getPackageId(), params.getRepoUrlStr()));
         parse();
         if (moreThanOnePackage)
-            throw new RuntimeException(String.format("Given PACKAGE_SPEC (%s) resolves to more than one package on the repository: %s, %s",
-                    params.getPackageSpec(), nugetPkg.getPackageName(), ListUtil.join(otherPackages)));
+            throw new RuntimeException(String.format("Given PACKAGE_ID (%s) resolves to more than one package on the repository: %s, %s",
+                    params.getPackageId(), nugetPkg.getPackageName(), ListUtil.join(otherPackages)));
     }
 
     private void parse() {

@@ -2,6 +2,7 @@ package com.tw.go.plugin.nuget.config;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class RepoUrlTest {
     }
 
     @Test
+    @Ignore
     public void shouldFailCheckConnectionToTheRepoWhenHttpUrlIsNotReachable() {
         try {
             RepoUrl.create("http://sifystdgobgr101.thoughtworks.com:8080/tfs/", null, null).checkConnection();

@@ -7,8 +7,6 @@ import com.tw.go.plugin.nuget.config.RepoUrl;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static junit.framework.Assert.assertNull;
@@ -29,27 +27,27 @@ public class NuGetPollerTest {
         when(repoCfgs.get(RepoUrl.USERNAME)).thenReturn(new PackageConfiguration(RepoUrl.USERNAME, user));
         String password = "passwrod";
         when(repoCfgs.get(RepoUrl.PASSWORD)).thenReturn(new PackageConfiguration(RepoUrl.PASSWORD, password));
-        String spec = "7-Zip";
-        PackageConfiguration packageConfiguration = new PackageConfiguration(NuGetConfig.PACKAGE_SPEC, spec);
-        when(pkgCfgs.get(NuGetConfig.PACKAGE_SPEC)).thenReturn(packageConfiguration);
+        String packageId = "7-Zip";
+        PackageConfiguration packageConfiguration = new PackageConfiguration(NuGetConfig.PACKAGE_ID, packageId);
+        when(pkgCfgs.get(NuGetConfig.PACKAGE_ID)).thenReturn(packageConfiguration);
         PackageRevision dummyResult = new PackageRevision("1.0", new Date(),"user");
         RepoUrl repoUrl = RepoUrl.create(repoUrlStr, user, password);
-        doReturn(dummyResult).when(spy).executeNuGetCmd(eq(repoUrl), argThat(new SpecMatcher(spec)));
+        doReturn(dummyResult).when(spy).executeNuGetCmd(eq(repoUrl), argThat(new PackageIdMatcher(packageId)));
         //actual test
         spy.getLatestRevision(pkgCfgs, repoCfgs);
-        verify(spy).executeNuGetCmd(eq(repoUrl), argThat(new SpecMatcher(spec)));
+        verify(spy).executeNuGetCmd(eq(repoUrl), argThat(new PackageIdMatcher(packageId)));
     }
 
-    class SpecMatcher extends ArgumentMatcher <PackageConfiguration>{
-        private String expectedSpec;
+    class PackageIdMatcher extends ArgumentMatcher <PackageConfiguration>{
+        private String expectedPackageId;
 
-        SpecMatcher(String expectedSpec) {
-            this.expectedSpec = expectedSpec;
+        PackageIdMatcher(String expectedPackageId) {
+            this.expectedPackageId = expectedPackageId;
         }
 
         @Override
         public boolean matches(Object o) {
-            return ((PackageConfiguration)o).getValue().equals(expectedSpec);
+            return ((PackageConfiguration)o).getValue().equals(expectedPackageId);
         }
     }
 

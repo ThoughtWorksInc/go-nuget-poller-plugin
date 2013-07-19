@@ -20,9 +20,9 @@ public class NuGetConfig implements PackageRepositoryConfiguration {
             new PackageConfiguration(RepoUrl.USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1);
     public static final PackageConfiguration REPO_CONFIG_PASSWORD =
             new PackageConfiguration(RepoUrl.PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2);
-    public static final String PACKAGE_SPEC = "PACKAGE_SPEC";
-    public static final PackageConfiguration PKG_CONFIG_PACKAGE_SPEC =
-            new PackageConfiguration(PACKAGE_SPEC).with(DISPLAY_NAME, "Package Spec").with(DISPLAY_ORDER, 0);
+    public static final String PACKAGE_ID = "PACKAGE_ID";
+    public static final PackageConfiguration PKG_CONFIG_PACKAGE_ID =
+            new PackageConfiguration(PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
 
     public PackageConfigurations getRepositoryConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();
@@ -34,7 +34,7 @@ public class NuGetConfig implements PackageRepositoryConfiguration {
 
     public PackageConfigurations getPackageConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();
-        configurations.addConfiguration(PKG_CONFIG_PACKAGE_SPEC);
+        configurations.addConfiguration(PKG_CONFIG_PACKAGE_ID);
         return configurations;
     }
 
@@ -61,30 +61,30 @@ public class NuGetConfig implements PackageRepositoryConfiguration {
     }
 
     public boolean isPackageConfigurationValid(PackageConfigurations packageConfig, PackageConfigurations repoConfig, Errors errors) {
-        PackageConfiguration packageSpecConfig = packageConfig.get(PACKAGE_SPEC);
-        if (packageSpecConfig == null) {
-            String message = "Package spec not specified";
+        PackageConfiguration packageIdConfig = packageConfig.get(PACKAGE_ID);
+        if (packageIdConfig == null) {
+            String message = "Package id not specified";
             LOGGER.info(message);
-            errors.addError(new ValidationError(PACKAGE_SPEC, message));
+            errors.addError(new ValidationError(PACKAGE_ID, message));
             return false;
         }
-        String packageSpec = packageSpecConfig.getValue();
-        if (packageSpec == null) {
-            String message = "Package spec is null";
+        String packageId = packageIdConfig.getValue();
+        if (packageId == null) {
+            String message = "Package id is null";
             LOGGER.info(message);
-            errors.addError(new ValidationError(PACKAGE_SPEC, message));
+            errors.addError(new ValidationError(PACKAGE_ID, message));
             return false;
         }
-        if (isBlank(packageSpec.trim())) {
-            String message = "Package spec is empty";
+        if (isBlank(packageId.trim())) {
+            String message = "Package id is empty";
             LOGGER.info(message);
-            errors.addError(new ValidationError(PACKAGE_SPEC, message));
+            errors.addError(new ValidationError(PACKAGE_ID, message));
             return false;
         }
-        if (packageSpec.contains("*") || packageSpec.contains("?")) {
-            String message = String.format("Package spec [%s] is invalid", packageSpec);
+        if (packageId.contains("*") || packageId.contains("?")) {
+            String message = String.format("Package id [%s] is invalid", packageId);
             LOGGER.info(message);
-            errors.addError(new ValidationError(PACKAGE_SPEC, message));
+            errors.addError(new ValidationError(PACKAGE_ID, message));
             return false;
         }
         return true;

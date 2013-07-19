@@ -21,8 +21,8 @@ public class NuGetCmdOutputTest {
     public void shouldFailIfMultiplePackagesInOutput() {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
-        String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
+        String packageId = "7-Zip.CommandLine";
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), packageId);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add(ZIP_PKG);
@@ -39,17 +39,16 @@ public class NuGetCmdOutputTest {
             nuGetCmdOutput.validateAndParse(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("Given PACKAGE_SPEC (7-Zip.CommandLine) resolves to more than one package on the repository: 7-Zip.CommandLine, 2ndpkg"));
+            assertThat(e.getMessage(), is("Given PACKAGE_ID (7-Zip.CommandLine) resolves to more than one package on the repository: 7-Zip.CommandLine, 2ndpkg"));
         }
 
     }
     @Test
 
     public void shouldFailIfMultipleGETsInOutput() {
-        String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
-        String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
+        String packageId = "7-Zip.CommandLine";
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), packageId);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add(ZIP_PKG);
@@ -75,8 +74,8 @@ public class NuGetCmdOutputTest {
     public void shouldFailIfMultiplePackagesInOutput_NonHttp() {
         String repoid = "repoid";
         String repourl = "\\\\host\\shared-folder";
-        String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
+        String packageId = "7-Zip.CommandLine";
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), packageId);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(ZIP_PKG);
         stdOut.add(VERSION);
@@ -91,7 +90,7 @@ public class NuGetCmdOutputTest {
             nuGetCmdOutput.validateAndParse(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("Given PACKAGE_SPEC (7-Zip.CommandLine) resolves to more than one package on the repository: 7-Zip.CommandLine, 2ndpkg"));
+            assertThat(e.getMessage(), is("Given PACKAGE_ID (7-Zip.CommandLine) resolves to more than one package on the repository: 7-Zip.CommandLine, 2ndpkg"));
         }
 
     }
@@ -100,8 +99,8 @@ public class NuGetCmdOutputTest {
     public void shouldFailIfNoPackageFound() {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
-        String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
+        String packageId = "7-Zip.CommandLine";
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), packageId);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add("No packages found.");
@@ -110,7 +109,7 @@ public class NuGetCmdOutputTest {
             nuGetCmdOutput.validateAndParse(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("No package with spec 7-Zip.CommandLine found in source http://localhost:4567/nuget/default"));
+            assertThat(e.getMessage(), is("No package with id 7-Zip.CommandLine found in source http://localhost:4567/nuget/default"));
         }
     }
 
@@ -118,8 +117,8 @@ public class NuGetCmdOutputTest {
     public void shouldFailIfNoPackageFound_NonHttp() {
         String repoid = "repoid";
         String repourl = "\\\\host\\nuget-repo";
-        String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
+        String packageId = "7-Zip.CommandLine";
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), packageId);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add("No packages found.");
         NuGetCmdOutput nuGetCmdOutput = new NuGetCmdOutputNonHttp(0, stdOut, new ArrayList<String>());
@@ -127,15 +126,15 @@ public class NuGetCmdOutputTest {
             nuGetCmdOutput.validateAndParse(params);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("No package with spec 7-Zip.CommandLine found in source "+repourl));
+            assertThat(e.getMessage(), is("No package with id 7-Zip.CommandLine found in source "+repourl));
         }
     }
     @Test
     public void shouldFailIfOutputDoesNotBeginWithGet() {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
-        String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
+        String packageId = "7-Zip.CommandLine";
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), packageId);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(ZIP_PKG);
         stdOut.add(VERSION);
@@ -154,9 +153,9 @@ public class NuGetCmdOutputTest {
     public void shouldReturnCurtailedPackageRevisionForNonHttp() {
         String repoid = "repoid";
         String repourlStr = "\\\\host\\nuget-repo";
-        String spec = "7-Zip.CommandLine";
+        String packageId = "7-Zip.CommandLine";
         RepoUrl repoUrl = RepoUrl.create(repourlStr, null, null);
-        NuGetCmdParams params = new NuGetCmdParams(repoUrl, spec);
+        NuGetCmdParams params = new NuGetCmdParams(repoUrl, packageId);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(ZIP_PKG);
         stdOut.add(VERSION);

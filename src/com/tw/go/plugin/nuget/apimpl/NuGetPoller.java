@@ -9,10 +9,9 @@ import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.nuget.NuGetCmd;
 import com.tw.go.plugin.nuget.NuGetCmdParams;
-import com.tw.go.plugin.nuget.NuGetPackage;
 import com.tw.go.plugin.nuget.config.RepoUrl;
 
-import static com.tw.go.plugin.nuget.apimpl.NuGetConfig.PACKAGE_SPEC;
+import static com.tw.go.plugin.nuget.apimpl.NuGetConfig.PACKAGE_ID;
 import static com.tw.go.plugin.nuget.config.RepoUrl.PASSWORD;
 import static com.tw.go.plugin.nuget.config.RepoUrl.REPO_URL;
 import static com.tw.go.plugin.nuget.config.RepoUrl.USERNAME;
@@ -21,11 +20,11 @@ public class NuGetPoller implements PackageRepositoryPoller {
     private static Logger LOGGER = Logger.getLoggerFor(NuGetPoller.class);
 
     public PackageRevision getLatestRevision(PackageConfigurations packageConfig, PackageConfigurations repoConfig) {
-        LOGGER.info(String.format("getLatestRevision called with spec %s, for repo: %s",
-                packageConfig.get(PACKAGE_SPEC).getValue(), repoConfig.get(REPO_URL).getValue()));
+        LOGGER.info(String.format("getLatestRevision called with packageId %s, for repo: %s",
+                packageConfig.get(PACKAGE_ID).getValue(), repoConfig.get(REPO_URL).getValue()));
         validateConfig(repoConfig, packageConfig);
         RepoUrl repoUrl = getRepoUrl(repoConfig);
-        PackageRevision packageRevision = executeNuGetCmd(repoUrl, packageConfig.get(PACKAGE_SPEC));
+        PackageRevision packageRevision = executeNuGetCmd(repoUrl, packageConfig.get(PACKAGE_ID));
         LOGGER.info(String.format("getLatestRevision returning with %s, %s",
                 packageRevision.getRevision(), packageRevision.getTimestamp()));
         return packageRevision;
@@ -39,12 +38,12 @@ public class NuGetPoller implements PackageRepositoryPoller {
     }
 
     public PackageRevision latestModificationSince(PackageConfigurations packageConfig, PackageConfigurations repoConfig, PackageRevision previouslyKnownRevision) {
-        LOGGER.info(String.format("latestModificationSince called with spec %s, for repo: %s",
-                packageConfig.get(PACKAGE_SPEC).getValue(), repoConfig.get(REPO_URL).getValue()));
+        LOGGER.info(String.format("latestModificationSince called with packageId %s, for repo: %s",
+                packageConfig.get(PACKAGE_ID).getValue(), repoConfig.get(REPO_URL).getValue()));
         validateConfig(repoConfig, packageConfig);
         RepoUrl repoUrl = getRepoUrl(repoConfig);
         PackageRevision updatedPackage =
-                executeNuGetCmd(repoUrl, packageConfig.get(PACKAGE_SPEC),
+                executeNuGetCmd(repoUrl, packageConfig.get(PACKAGE_ID),
                     previouslyKnownRevision);
         if(updatedPackage == null){
             LOGGER.info(String.format("no modification since %s", previouslyKnownRevision.getRevision()));
@@ -58,8 +57,8 @@ public class NuGetPoller implements PackageRepositoryPoller {
         return updatedPackage;
     }
 
-    private PackageRevision executeNuGetCmd(RepoUrl repoUrl, PackageConfiguration packageSpec, PackageRevision lastKnownVersion) {
-        return new NuGetCmd(new NuGetCmdParams(repoUrl, packageSpec.getValue(), lastKnownVersion)).execute();
+    private PackageRevision executeNuGetCmd(RepoUrl repoUrl, PackageConfiguration packageId, PackageRevision lastKnownVersion) {
+        return new NuGetCmd(new NuGetCmdParams(repoUrl, packageId.getValue(), lastKnownVersion)).execute();
     }
 
     private void validateConfig(PackageConfigurations repoConfig, PackageConfigurations packageConfig) {
@@ -76,7 +75,7 @@ public class NuGetPoller implements PackageRepositoryPoller {
         }
     }
 
-    PackageRevision executeNuGetCmd(RepoUrl repoUrl, PackageConfiguration packageSpec) {
-        return new NuGetCmd(new NuGetCmdParams(repoUrl, packageSpec.getValue())).execute();
+    PackageRevision executeNuGetCmd(RepoUrl repoUrl, PackageConfiguration packageId) {
+        return new NuGetCmd(new NuGetCmdParams(repoUrl, packageId.getValue())).execute();
     }
 }

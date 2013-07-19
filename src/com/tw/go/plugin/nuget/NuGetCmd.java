@@ -27,7 +27,7 @@ public class NuGetCmd {
             return findPackagesByIdApi();
         } catch (RuntimeException apiFail) {
             if(apiFail instanceof NuGetException) throw apiFail;
-            String[] command = {"nuget", "list", params.getApplicablePackageSpec(),
+            String[] command = {"nuget", "list", params.getPrefixedPackageId(),
                     "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
             NuGetCmdOutput nuGetCmdOutput;
             synchronized (params.getRepoId().intern()) {
@@ -50,18 +50,18 @@ public class NuGetCmd {
 
     private String apiFindPackagesById() {
         return String.format("%sFindPackagesById()?$filter=IsLatestVersion&id='%s'",
-                params.getRepoUrlStrWithTrailingSlash(),params.getPackageSpec());
+                params.getRepoUrlStrWithTrailingSlash(),params.getPackageId());
     }
 
     private String apiGetUpdates() {
         return String.format("%sGetUpdates()?packageIds='%s'&versions='%s'&includePrerelease=true&includeAllVersions=false",
-                params.getRepoUrlStrWithTrailingSlash(),params.getPackageSpec(), params.getLastKnownVersion());
+                params.getRepoUrlStrWithTrailingSlash(),params.getPackageId(), params.getLastKnownVersion());
     }
 
 
     private String getErrorMessage(String message) {
-        return format("Error while querying repository with path '%s' and package spec '%s'. %s",
-                params.getRepoUrlStr(), params.getPackageSpec(), message);
+        return format("Error while querying repository with path '%s' and packageId '%s'. %s",
+                params.getRepoUrlStr(), params.getPackageId(), message);
     }
 
 }
