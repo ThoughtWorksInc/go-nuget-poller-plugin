@@ -43,10 +43,19 @@ public class NuGetCmd {
     }
 
     private PackageRevision findPackagesByIdApi() {
-        String url = String.format("%sFindPackagesById()?$filter=IsLatestVersion&id='%s'",
-                params.getRepoUrlStrWithTrailingSlash(),params.getPackageSpec());
+        String url = params.isLastVersionKnown() ? apiGetUpdates() : apiFindPackagesById();
         LOGGER.info(url);
-        return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision();
+        return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());
+    }
+
+    private String apiFindPackagesById() {
+        return String.format("%sFindPackagesById()?$filter=IsLatestVersion&id='%s'",
+                params.getRepoUrlStrWithTrailingSlash(),params.getPackageSpec());
+    }
+
+    private String apiGetUpdates() {
+        return String.format("%sGetUpdates()?packageIds='%s'&versions='%s'&includePrerelease=true&includeAllVersions=false",
+                params.getRepoUrlStrWithTrailingSlash(),params.getPackageSpec(), params.getLastKnownVersion());
     }
 
 

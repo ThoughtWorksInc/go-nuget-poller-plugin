@@ -4,7 +4,6 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigur
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigurations;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.tw.go.plugin.nuget.config.RepoUrl;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 
@@ -35,10 +34,10 @@ public class NuGetPollerTest {
         when(pkgCfgs.get(NuGetConfig.PACKAGE_SPEC)).thenReturn(packageConfiguration);
         PackageRevision dummyResult = new PackageRevision("1.0", new Date(),"user");
         RepoUrl repoUrl = RepoUrl.create(repoUrlStr, user, password);
-        doReturn(dummyResult).when(spy).executeNuGetCmd(anyString(),eq(repoUrl), argThat(new SpecMatcher(spec)));
+        doReturn(dummyResult).when(spy).executeNuGetCmd(eq(repoUrl), argThat(new SpecMatcher(spec)));
         //actual test
         spy.getLatestRevision(pkgCfgs, repoCfgs);
-        verify(spy).executeNuGetCmd(anyString(),eq(repoUrl), argThat(new SpecMatcher(spec)));
+        verify(spy).executeNuGetCmd(eq(repoUrl), argThat(new SpecMatcher(spec)));
     }
 
     class SpecMatcher extends ArgumentMatcher <PackageConfiguration>{
@@ -54,27 +53,4 @@ public class NuGetPollerTest {
         }
     }
 
-    @Test
-    public void shouldReturnNewerRevisionBasedonTimestamp() throws ParseException {
-        NuGetPoller poller = new NuGetPoller();
-        NuGetPoller spy = spy(poller);
-        PackageRevision previouslyKnownRevision = new PackageRevision("abc-1.1.0", new SimpleDateFormat("yyyy-MM-dd").parse("2013-07-17"), "xyz");
-        PackageRevision latestRevision = new PackageRevision("abc-1.1.1", new SimpleDateFormat("yyyy-MM-dd").parse("2013-07-18"), "pqr");
-        PackageConfigurations repoCfg = mock(PackageConfigurations.class);
-        PackageConfigurations pkgCfg = mock(PackageConfigurations.class);
-        doReturn(latestRevision).when(spy).getLatestRevision(pkgCfg, repoCfg);
-        assertThat(spy.latestModificationSince(pkgCfg, repoCfg, previouslyKnownRevision), is(latestRevision));
-    }
-
-    @Test
-    public void shouldReturnNullIfNoNewerRevision() throws ParseException {
-        NuGetPoller poller = new NuGetPoller();
-        NuGetPoller spy = spy(poller);
-        PackageRevision previouslyKnownRevision = new PackageRevision("abc-1.1.0", new SimpleDateFormat("yyyy-MM-dd").parse("2013-07-17"), "xyz");
-        PackageRevision latestRevision = new PackageRevision("abc-1.1.1", new SimpleDateFormat("yyyy-MM-dd").parse("2013-07-17"), "pqr");
-        PackageConfigurations repoCfg = mock(PackageConfigurations.class);
-        PackageConfigurations pkgCfg = mock(PackageConfigurations.class);
-        doReturn(latestRevision).when(spy).getLatestRevision(pkgCfg, repoCfg);
-        assertNull(spy.latestModificationSince(pkgCfg, repoCfg, previouslyKnownRevision));
-    }
 }

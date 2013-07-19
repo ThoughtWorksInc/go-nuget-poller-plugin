@@ -14,55 +14,77 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class NuGetConfig implements PackageRepositoryConfiguration {
 
     private static Logger LOGGER = Logger.getLoggerFor(NuGetConfig.class);
+    public static final PackageConfiguration REPO_CONFIG_REPO_URL =
+            new PackageConfiguration(RepoUrl.REPO_URL).with(DISPLAY_NAME, "Package Source").with(DISPLAY_ORDER, 0);
+    public static final PackageConfiguration REPO_CONFIG_USERNAME =
+            new PackageConfiguration(RepoUrl.USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1);
+    public static final PackageConfiguration REPO_CONFIG_PASSWORD =
+            new PackageConfiguration(RepoUrl.PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2);
     public static final String PACKAGE_SPEC = "PACKAGE_SPEC";
+    public static final PackageConfiguration PKG_CONFIG_PACKAGE_SPEC =
+            new PackageConfiguration(PACKAGE_SPEC).with(DISPLAY_NAME, "Package Spec").with(DISPLAY_ORDER, 0);
 
     public PackageConfigurations getRepositoryConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();
-        configurations.addConfiguration(new PackageConfiguration(RepoUrl.REPO_URL).with(DISPLAY_NAME, "Package Source").with(DISPLAY_ORDER, 0));
-        configurations.addConfiguration(new PackageConfiguration(RepoUrl.USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1));
-        configurations.addConfiguration(new PackageConfiguration(RepoUrl.PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2));
+        configurations.addConfiguration(REPO_CONFIG_REPO_URL);
+        configurations.addConfiguration(REPO_CONFIG_USERNAME);
+        configurations.addConfiguration(REPO_CONFIG_PASSWORD);
         return configurations;
     }
 
     public PackageConfigurations getPackageConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();
-        configurations.addConfiguration(new PackageConfiguration(PACKAGE_SPEC).with(DISPLAY_NAME, "Package Spec").with(DISPLAY_ORDER, 0));
+        configurations.addConfiguration(PKG_CONFIG_PACKAGE_SPEC);
         return configurations;
     }
 
-    public boolean isRepositoryConfigurationValid(PackageConfigurations repositoryConfigurations, Errors errors) {
-        PackageConfiguration repositoryUrlConfiguration = repositoryConfigurations.get(RepoUrl.REPO_URL);
-        PackageConfiguration username= repositoryConfigurations.get(RepoUrl.USERNAME);
-        PackageConfiguration password= repositoryConfigurations.get(RepoUrl.PASSWORD);
+    public boolean isRepositoryConfigurationValid(PackageConfigurations repoConfigs, Errors errors) {
 
-        if (repositoryUrlConfiguration == null) {
-            errors.addError(new ValidationError(RepoUrl.REPO_URL, "Repository url not specified"));
+        PackageConfiguration repoUrlConfig = repoConfigs.get(RepoUrl.REPO_URL);
+        if (repoUrlConfig == null) {
+            String message = "Repository url not specified";
+            LOGGER.error(message);
+            errors.addError(new ValidationError(RepoUrl.REPO_URL, message));
             return false;
         }
-        String usernameValue = username == null? null: username.getValue();
-        String passwordValue = password == null? null: password.getValue();
 
-        RepoUrl.create(repositoryUrlConfiguration.getValue(), usernameValue, passwordValue).validate(errors);
+        RepoUrl.create(
+                repoUrlConfig.getValue(),
+                stringValueOf(repoConfigs.get(RepoUrl.USERNAME)),
+                stringValueOf(repoConfigs.get(RepoUrl.PASSWORD))).validate(errors);
         return !errors.hasErrors();
     }
 
-    public boolean isPackageConfigurationValid(PackageConfigurations packageConfigurations, PackageConfigurations repositoryConfigurations, Errors errors) {
-        PackageConfiguration artifactIdConfiguration = packageConfigurations.get(PACKAGE_SPEC);
-        if (artifactIdConfiguration == null) {
-            errors.addError(new ValidationError(PACKAGE_SPEC, "Package spec not specified"));
+    public String stringValueOf(PackageConfiguration packageConfiguration) {
+        if (packageConfiguration == null) return null;
+        return packageConfiguration.getValue();
+    }
+
+    public boolean isPackageConfigurationValid(PackageConfigurations packageConfig, PackageConfigurations repoConfig, Errors errors) {
+        PackageConfiguration packageSpecConfig = packageConfig.get(PACKAGE_SPEC);
+        if (packageSpecConfig == null) {
+            String message = "Package spec not specified";
+            LOGGER.info(message);
+            errors.addError(new ValidationError(PACKAGE_SPEC, message));
             return false;
         }
-        String packageSpec = artifactIdConfiguration.getValue();
+        String packageSpec = packageSpecConfig.getValue();
         if (packageSpec == null) {
-            errors.addError(new ValidationError(PACKAGE_SPEC, "Package spec is null"));
+            String message = "Package spec is null";
+            LOGGER.info(message);
+            errors.addError(new ValidationError(PACKAGE_SPEC, message));
             return false;
         }
         if (isBlank(packageSpec.trim())) {
-            errors.addError(new ValidationError(PACKAGE_SPEC, "Package spec is empty"));
+            String message = "Package spec is empty";
+            LOGGER.info(message);
+            errors.addError(new ValidationError(PACKAGE_SPEC, message));
             return false;
         }
         if (packageSpec.contains("*") || packageSpec.contains("?")) {
-            errors.addError(new ValidationError(PACKAGE_SPEC, String.format("Package spec [%s] is invalid", packageSpec)));
+            String message = String.format("Package spec [%s] is invalid", packageSpec);
+            LOGGER.info(message);
+            errors.addError(new ValidationError(PACKAGE_SPEC, message));
             return false;
         }
         return true;
@@ -72,7 +94,9 @@ public class NuGetConfig implements PackageRepositoryConfiguration {
         try {
             new NuGetPoller().getLatestRevision(packageConfigurations, repositoryConfigurations);
         } catch (Exception e) {
-            throw new RuntimeException("Test Connection failed: " + e.getMessage(), e);
+            String message = "Test Connection failed: " + e.getMessage();
+            LOGGER.warn(message);
+            throw new RuntimeException(message, e);
         }
     }
 }

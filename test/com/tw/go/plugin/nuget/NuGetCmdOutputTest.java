@@ -22,7 +22,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add(ZIP_PKG);
@@ -49,7 +49,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add(ZIP_PKG);
@@ -76,7 +76,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "\\\\host\\shared-folder";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(ZIP_PKG);
         stdOut.add(VERSION);
@@ -101,7 +101,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(GET_CMD);
         stdOut.add("No packages found.");
@@ -119,7 +119,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "\\\\host\\nuget-repo";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add("No packages found.");
         NuGetCmdOutput nuGetCmdOutput = new NuGetCmdOutputNonHttp(0, stdOut, new ArrayList<String>());
@@ -135,7 +135,7 @@ public class NuGetCmdOutputTest {
         String repoid = "repoid";
         String repourl = "http://localhost:4567/nuget/default";
         String spec = "7-Zip.CommandLine";
-        NuGetCmdParams params = new NuGetCmdParams(repoid, RepoUrl.create(repourl, null, null), spec);
+        NuGetCmdParams params = new NuGetCmdParams(RepoUrl.create(repourl, null, null), spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(ZIP_PKG);
         stdOut.add(VERSION);
@@ -156,7 +156,7 @@ public class NuGetCmdOutputTest {
         String repourlStr = "\\\\host\\nuget-repo";
         String spec = "7-Zip.CommandLine";
         RepoUrl repoUrl = RepoUrl.create(repourlStr, null, null);
-        NuGetCmdParams params = new NuGetCmdParams(repoid, repoUrl, spec);
+        NuGetCmdParams params = new NuGetCmdParams(repoUrl, spec);
         ArrayList<String> stdOut = new ArrayList<String>();
         stdOut.add(ZIP_PKG);
         stdOut.add(VERSION);

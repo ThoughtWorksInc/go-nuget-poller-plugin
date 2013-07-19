@@ -53,9 +53,11 @@ public class NuGetFeedDocument {
         return getProperty(getProperties(), "Version");
     }
 
-    public PackageRevision getPackageRevision() {
-        if (getEntries().getLength() == 0)
-            throw new NuGetException("No such package found");
+    public PackageRevision getPackageRevision(boolean lastVersionKnown) {
+        if (getEntries().getLength() == 0){
+            if(lastVersionKnown) return null;
+            else throw new NuGetException("No such package found");
+        }
         if (getEntries().getLength() > 1)
             throw new NuGetException(String.format("Multiple entries in feed for %s %s", getEntryTitle(), getPackageVersion()));
         PackageRevision result = new PackageRevision(getPackageLabel(), getPublishedDate(), getAuthor());

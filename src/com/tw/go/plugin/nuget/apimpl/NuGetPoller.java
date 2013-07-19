@@ -9,42 +9,63 @@ import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.nuget.NuGetCmd;
 import com.tw.go.plugin.nuget.NuGetCmdParams;
+import com.tw.go.plugin.nuget.NuGetPackage;
 import com.tw.go.plugin.nuget.config.RepoUrl;
+
+import static com.tw.go.plugin.nuget.apimpl.NuGetConfig.PACKAGE_SPEC;
+import static com.tw.go.plugin.nuget.config.RepoUrl.PASSWORD;
+import static com.tw.go.plugin.nuget.config.RepoUrl.REPO_URL;
+import static com.tw.go.plugin.nuget.config.RepoUrl.USERNAME;
 
 public class NuGetPoller implements PackageRepositoryPoller {
     private static Logger LOGGER = Logger.getLoggerFor(NuGetPoller.class);
 
-    public PackageRevision getLatestRevision(PackageConfigurations packagePluginConfigurations, PackageConfigurations repositoryPluginConfigurations) {
-        LOGGER.info(String.format("getLatestRevision called with spec %s, for repo: %s", packagePluginConfigurations.get(NuGetConfig.PACKAGE_SPEC).getValue(), repositoryPluginConfigurations.get(RepoUrl.REPO_URL).getValue()));
-        validateData(repositoryPluginConfigurations, packagePluginConfigurations);
-        PackageConfiguration repoUrlConfig = repositoryPluginConfigurations.get(RepoUrl.REPO_URL);
-        PackageConfiguration username = repositoryPluginConfigurations.get(RepoUrl.USERNAME);
-        PackageConfiguration password = repositoryPluginConfigurations.get(RepoUrl.PASSWORD);
-        PackageConfiguration packageSpec = packagePluginConfigurations.get(NuGetConfig.PACKAGE_SPEC);
-        String usernameValue = username == null ? null : username.getValue();
-        String passwordValue = password == null ? null : password.getValue();
-
-        RepoUrl repoUrl = RepoUrl.create(repoUrlConfig.getValue(), usernameValue, passwordValue);
-        repoUrl.checkConnection();
-        PackageRevision packageRevision = executeNuGetCmd(repoUrl.getRepoId(), repoUrl, packageSpec);
-        LOGGER.info(String.format("getLatestRevision returning with %s, %s", packageRevision.getRevision(), packageRevision.getTimestamp()));
-        System.out.println(String.format("getLatestRevision returning with %s, %s", packageRevision.getRevision(), packageRevision.getTimestamp()));
+    public PackageRevision getLatestRevision(PackageConfigurations packageConfig, PackageConfigurations repoConfig) {
+        LOGGER.info(String.format("getLatestRevision called with spec %s, for repo: %s",
+                packageConfig.get(PACKAGE_SPEC).getValue(), repoConfig.get(REPO_URL).getValue()));
+        validateConfig(repoConfig, packageConfig);
+        RepoUrl repoUrl = getRepoUrl(repoConfig);
+        PackageRevision packageRevision = executeNuGetCmd(repoUrl, packageConfig.get(PACKAGE_SPEC));
+        LOGGER.info(String.format("getLatestRevision returning with %s, %s",
+                packageRevision.getRevision(), packageRevision.getTimestamp()));
         return packageRevision;
     }
 
-    public PackageRevision latestModificationSince(PackageConfigurations packagePluginConfigurations, PackageConfigurations repositoryPluginConfigurations, PackageRevision previouslyKnownRevision) {
-        PackageRevision latestRevision = getLatestRevision(packagePluginConfigurations, repositoryPluginConfigurations);
-
-        if (latestRevision.getTimestamp().getTime() > previouslyKnownRevision.getTimestamp().getTime())
-            return latestRevision;
-        System.out.println(String.format("latestModificationSince returning null for previous %s, %s", previouslyKnownRevision.getRevision(), previouslyKnownRevision.getTimestamp()));
-        return null;
+    private RepoUrl getRepoUrl(PackageConfigurations repoConfig) {
+        return RepoUrl.create(
+                    repoConfig.get(REPO_URL).getValue(),
+                    new NuGetConfig().stringValueOf(repoConfig.get(USERNAME)),
+                    new NuGetConfig().stringValueOf(repoConfig.get(PASSWORD)));
     }
 
-    private void validateData(PackageConfigurations repositoryConfigurations, PackageConfigurations packageConfigurations) {
+    public PackageRevision latestModificationSince(PackageConfigurations packageConfig, PackageConfigurations repoConfig, PackageRevision previouslyKnownRevision) {
+        LOGGER.info(String.format("latestModificationSince called with spec %s, for repo: %s",
+                packageConfig.get(PACKAGE_SPEC).getValue(), repoConfig.get(REPO_URL).getValue()));
+        validateConfig(repoConfig, packageConfig);
+        RepoUrl repoUrl = getRepoUrl(repoConfig);
+        PackageRevision updatedPackage =
+                executeNuGetCmd(repoUrl, packageConfig.get(PACKAGE_SPEC),
+                    previouslyKnownRevision);
+        if(updatedPackage == null){
+            LOGGER.info(String.format("no modification since %s", previouslyKnownRevision.getRevision()));
+            return null;
+        }
+        LOGGER.info(String.format("latestModificationSince returning with %s, %s",
+                updatedPackage.getRevision(), updatedPackage.getTimestamp()));
+        if (updatedPackage.getTimestamp().getTime() < previouslyKnownRevision.getTimestamp().getTime())
+            LOGGER.warn(String.format("Updated Package %s published earlier (%s) than previous (%s, %s)",
+                    updatedPackage.getRevision(), updatedPackage.getTimestamp(), previouslyKnownRevision.getRevision(), previouslyKnownRevision.getTimestamp()));
+        return updatedPackage;
+    }
+
+    private PackageRevision executeNuGetCmd(RepoUrl repoUrl, PackageConfiguration packageSpec, PackageRevision lastKnownVersion) {
+        return new NuGetCmd(new NuGetCmdParams(repoUrl, packageSpec.getValue(), lastKnownVersion)).execute();
+    }
+
+    private void validateConfig(PackageConfigurations repoConfig, PackageConfigurations packageConfig) {
         Errors errors = new Errors();
-        new NuGetConfig().isRepositoryConfigurationValid(repositoryConfigurations, errors);
-        new NuGetConfig().isPackageConfigurationValid(packageConfigurations, repositoryConfigurations, errors);
+        new NuGetConfig().isRepositoryConfigurationValid(repoConfig, errors);
+        new NuGetConfig().isPackageConfigurationValid(packageConfig, repoConfig, errors);
         if (errors.hasErrors()) {
             StringBuilder stringBuilder = new StringBuilder();
             for (ValidationError validationError : errors.getErrors()) {
@@ -55,7 +76,7 @@ public class NuGetPoller implements PackageRepositoryPoller {
         }
     }
 
-    PackageRevision executeNuGetCmd(String repoId, RepoUrl url, PackageConfiguration packageSpec) {
-        return new NuGetCmd(new NuGetCmdParams(repoId, url, packageSpec.getValue())).execute();
+    PackageRevision executeNuGetCmd(RepoUrl repoUrl, PackageConfiguration packageSpec) {
+        return new NuGetCmd(new NuGetCmdParams(repoUrl, packageSpec.getValue())).execute();
     }
 }
