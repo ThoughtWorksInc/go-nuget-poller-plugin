@@ -2,21 +2,22 @@ package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.tw.go.plugin.nuget.exe.NuGetCmdOutput;
+import com.tw.go.plugin.nuget.exe.ProcessRunner;
 
 import static java.lang.String.format;
 
-public class NuGetCmd {
-    static final String DELIMITER = "<=>";
+public class NuGet {
     private final ProcessRunner processRunner;
-    private static Logger LOGGER = Logger.getLoggerFor(NuGetCmd.class);
-    private final NuGetCmdParams params;
+    private static Logger LOGGER = Logger.getLoggerFor(NuGet.class);
+    private final NuGetParams params;
 
-    public NuGetCmd(NuGetCmdParams params) {
+    public NuGet(NuGetParams params) {
         this(new ProcessRunner(), params);
     }
 
     //for tests
-    public NuGetCmd(ProcessRunner processRunner, NuGetCmdParams params) {
+    public NuGet(ProcessRunner processRunner, NuGetParams params) {
         this.processRunner = processRunner;
         this.params = params;
     }

@@ -7,8 +7,8 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageReposito
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
-import com.tw.go.plugin.nuget.NuGetCmd;
-import com.tw.go.plugin.nuget.NuGetCmdParams;
+import com.tw.go.plugin.nuget.NuGet;
+import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.RepoUrl;
 
 import static com.tw.go.plugin.nuget.apimpl.NuGetConfig.PACKAGE_ID;
@@ -58,7 +58,7 @@ public class NuGetPoller implements PackageRepositoryPoller {
     }
 
     private PackageRevision executeNuGetCmd(RepoUrl repoUrl, PackageConfiguration packageId, PackageRevision lastKnownVersion) {
-        return new NuGetCmd(new NuGetCmdParams(repoUrl, packageId.getValue(), lastKnownVersion)).execute();
+        return new NuGet(new NuGetParams(repoUrl, packageId.getValue(), lastKnownVersion)).execute();
     }
 
     private void validateConfig(PackageConfigurations repoConfig, PackageConfigurations packageConfig) {
@@ -76,6 +76,6 @@ public class NuGetPoller implements PackageRepositoryPoller {
     }
 
     PackageRevision executeNuGetCmd(RepoUrl repoUrl, PackageConfiguration packageId) {
-        return new NuGetCmd(new NuGetCmdParams(repoUrl, packageId.getValue())).execute();
+        return new NuGet(new NuGetParams(repoUrl, packageId.getValue())).execute();
     }
 }

@@ -1,4 +1,4 @@
-package com.tw.go.plugin.nuget;
+package com.tw.go.plugin.nuget.exe;
 
 import com.thoughtworks.go.plugin.api.logging.Logger;
 

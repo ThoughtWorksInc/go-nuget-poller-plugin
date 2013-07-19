@@ -1,7 +1,11 @@
-package com.tw.go.plugin.nuget;
+package com.tw.go.plugin.nuget.exe;
 
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.tw.go.plugin.nuget.Feed;
+import com.tw.go.plugin.nuget.NuGetFeedDocument;
+import com.tw.go.plugin.nuget.NuGetPackage;
+import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.RepoUrl;
 import com.tw.go.plugin.util.ListUtil;
 
@@ -89,7 +93,7 @@ public class NuGetCmdOutput {
     private boolean moreThanOnePackage;
     private NuGetPackage nugetPkg;
 
-    public void validateAndParse(NuGetCmdParams params) {
+    public void validateAndParse(NuGetParams params) {
         if (isStdOutEmpty())
             throw new RuntimeException("Output is empty");
         http = params.isHttp();
@@ -148,7 +152,7 @@ public class NuGetCmdOutput {
         return new NuGetFeedDocument(new Feed(searchUrl).download());
     }
 
-    boolean isSuccess() {
+    public boolean isSuccess() {
         return isZeroReturnCode() && hasOutput() && !hasErrors();
     }
 }

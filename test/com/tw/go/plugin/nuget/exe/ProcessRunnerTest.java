@@ -1,5 +1,7 @@
-package com.tw.go.plugin.nuget;
+package com.tw.go.plugin.nuget.exe;
 
+import com.tw.go.plugin.nuget.exe.NuGetCmdOutput;
+import com.tw.go.plugin.nuget.exe.ProcessRunner;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;

@@ -28,7 +28,7 @@ public class NuGetPackage {
         this(pkgName, pkgVersion, "");
     }
 
-    String getPackageLabel() {
+    public String getPackageLabel() {
         return String.format("%s-%s", pkgName, pkgVersion);
     }
 
