@@ -7,6 +7,7 @@ import java.util.Date;
 public class NuGetPackage {
     public static final String PACKAGE_DESCRIPTION = "DESCRIPTION";
     public static final String PACKAGE_LOCATION = "LOCATION";
+    public static final String PACKAGE_VERSIONONLY = "VERSIONONLY";
 
     public String getPackageName() {
         return pkgName;
@@ -40,7 +41,7 @@ public class NuGetPackage {
         String version = feed.getPackageVersion();
         if (!pkgVersion.equals(version))
             throw new RuntimeException(String.format("Version mismatch for %s: %s, %s", pkgName, pkgVersion, version));
-        return createPackageRevision(feed.getPublishedDate(), getPackageLabel(), feed.getAuthor(), feed.getPackageLocation());
+        return createPackageRevision(feed.getPublishedDate(), getPackageLabel(), feed.getAuthor(), feed.getPackageLocation(), feed.getPackageVersion());
     }
 
     private void rejectIfMultipleEntries(NuGetFeedDocument feed) {
@@ -48,14 +49,19 @@ public class NuGetPackage {
             throw new RuntimeException(String.format("Multiple entries in feed for %s %s", pkgName, pkgVersion));
     }
 
-    PackageRevision createPackageRevision(Date publishedDate, String packageLabel, String author, String packageLocation) {
+    public PackageRevision createPackageRevision(Date publishedDate, String packageLabel, String author, String packageLocation, String packageVersion) {
         PackageRevision result = new PackageRevision(packageLabel, publishedDate, author);
         result.addData(PACKAGE_LOCATION, packageLocation);
         result.addData(PACKAGE_DESCRIPTION, pkgDescription);
+        if(packageVersion != null) result.addData(NuGetPackage.PACKAGE_VERSIONONLY, packageVersion);
         return result;
     }
 
     public String getFilename() {
         return pkgName+"."+pkgVersion+".nupkg";
+    }
+
+    public String getPackageVersion() {
+        return pkgVersion;
     }
 }
