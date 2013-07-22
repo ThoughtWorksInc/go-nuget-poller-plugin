@@ -56,16 +56,37 @@ public class NuGetConfigTest {
     }
 
     @Test
-    public void shouldCorrectlyCheckIfRepositoryConfigurationValid() {
+    public void shouldValidateRepoUrl() {
         assertForRepositoryConfigurationErrors(new PackageConfigurations(), asList(new ValidationError(REPO_URL, "Repository url not specified")), false);
         assertForRepositoryConfigurationErrors(configurations(REPO_URL, null), asList(new ValidationError(REPO_URL, InvalidRepoUrl.MESSAGE)), false);
         assertForRepositoryConfigurationErrors(configurations(REPO_URL, ""), asList(new ValidationError(REPO_URL, InvalidRepoUrl.MESSAGE)), false);
         assertForRepositoryConfigurationErrors(configurations(REPO_URL, "incorrectUrl"), asList(new ValidationError(REPO_URL, InvalidRepoUrl.MESSAGE)), false);
         assertForRepositoryConfigurationErrors(configurations(REPO_URL, "http://correct.com/url"), new ArrayList<ValidationError>(), true);
     }
+    @Test
+    public void shouldRejectUnsupportedTagsInRepoConfig() {
+        PackageConfigurations repoConfig = new PackageConfigurations();
+        repoConfig.add(new PackageConfiguration(REPO_URL, "http://nuget.org"));
+        repoConfig.add(new PackageConfiguration("unsupported_key", "value"));
+        assertForRepositoryConfigurationErrors(
+                repoConfig,
+                asList(new ValidationError("Unrecognized key: unsupported_key")),
+                false);
+
+    }
+    @Test
+    public void shouldRejectUnsupportedTagsInPkgConfig() {
+        PackageConfigurations pkgConfig = new PackageConfigurations();
+        pkgConfig.add(new PackageConfiguration(PACKAGE_ID, "abc"));
+        pkgConfig.add(new PackageConfiguration("unsupported_key", "value"));
+        assertForPackageConfigurationErrors(
+                pkgConfig,
+                asList(new ValidationError("Unrecognized key: unsupported_key")),
+                false);
+    }
 
     @Test
-    public void shouldCorrectlyCheckIfPackageConfigurationValid() {
+    public void shouldValidatePackageId() {
         assertForPackageConfigurationErrors(new PackageConfigurations(), asList(new ValidationError(PACKAGE_ID, "Package id not specified")), false);
         assertForPackageConfigurationErrors(configurations(PACKAGE_ID, null), asList(new ValidationError(PACKAGE_ID, "Package id is null")), false);
         assertForPackageConfigurationErrors(configurations(PACKAGE_ID, ""), asList(new ValidationError(PACKAGE_ID, "Package id is empty")), false);

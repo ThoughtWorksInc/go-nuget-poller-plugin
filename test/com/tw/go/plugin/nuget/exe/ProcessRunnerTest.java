@@ -28,7 +28,6 @@ public class ProcessRunnerTest {
             new ProcessRunner().execute(new String[]{"doesNotExist"}, false);
             fail("Should have thrown exception");
         } catch (Exception e) {
-            assertThat(e instanceof RuntimeException, is(true));
             assertThat(e.getMessage(), containsString("Cannot run program \"doesNotExist\""));
         }
     }
