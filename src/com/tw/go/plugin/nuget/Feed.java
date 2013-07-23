@@ -9,6 +9,7 @@ import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.net.URI;
 
 public class Feed {
     private final String url;
@@ -30,7 +31,7 @@ public class Feed {
             builder = factory.newDocumentBuilder();
             return builder.parse(response.getEntity().getContent());
         } catch (Exception ex) {
-            throw new RuntimeException(String.format("Error (%s) while getting package feed for : %s ", ex.getMessage(), url), ex);
+            throw new RuntimeException(String.format("%s (%s) while getting package feed for : %s ", ex.getClass().getSimpleName(),ex.getMessage(), url), ex);
         } finally {
             method.releaseConnection();
             client.getConnectionManager().shutdown();

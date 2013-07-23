@@ -15,7 +15,7 @@ public class InvalidRepoUrl extends RepoUrl {
     public void validate(Errors errors) {
         doBasicValidations(errors);
         if(!errors.hasErrors())
-        errors.addError(new ValidationError(REPO_URL, MESSAGE));
+        errors.addError(new ValidationError(NuGetRepoConfig.REPO_URL, MESSAGE));
     }
 
     @Override

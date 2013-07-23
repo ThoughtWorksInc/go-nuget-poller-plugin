@@ -26,11 +26,11 @@ public class CredentialsTest {
         Errors errors = new Errors();
         new Credentials(null, "password").validate(errors);
         assertThat(errors.hasErrors(), is(true));
-        assertThat(errors.getErrors(), hasItem(new ValidationError(RepoUrl.USERNAME, "Both Username and password are required.")));
+        assertThat(errors.getErrors(), hasItem(new ValidationError(NuGetRepoConfig.USERNAME, "Both Username and password are required.")));
 
         errors = new Errors();
         new Credentials("user", "").validate(errors);
         assertThat(errors.hasErrors(), is(true));
-        assertThat(errors.getErrors(), hasItem(new ValidationError(RepoUrl.PASSWORD, "Both Username and password are required.")));
+        assertThat(errors.getErrors(), hasItem(new ValidationError(NuGetRepoConfig.PASSWORD, "Both Username and password are required.")));
     }
 }

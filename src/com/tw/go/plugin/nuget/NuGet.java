@@ -23,42 +23,38 @@ public class NuGet {
     }
 
     public PackageRevision execute() {
+        if (!params.isHttp()) return nugetexe();
         try {
-            if(!params.isHttp()) throw new RuntimeException("please goto catch. ugh");
-            return findPackagesByIdApi();
-        } catch (RuntimeException apiFail) {
-            if(apiFail instanceof NuGetException) throw apiFail;
-            String[] command = {"nuget", "list", params.getPrefixedPackageId(),
-                    "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
-            NuGetCmdOutput nuGetCmdOutput;
-            synchronized (params.getRepoId().intern()) {
-                nuGetCmdOutput = processRunner.execute(command, params.isHttp());
-            }
-            if (nuGetCmdOutput.isSuccess()) {
-                nuGetCmdOutput.validateAndParse(params);
-                return nuGetCmdOutput.getPackageRevision(params.getRepoUrl());
-            }
-            LOGGER.info(nuGetCmdOutput.getErrorDetail());
-            throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary()));
+            return nugetApi();
+        } catch (NuGetException apiFail) {
+            throw apiFail;
+        } catch (RuntimeException ex) {
+            return nugetexe();
         }
     }
 
-    private PackageRevision findPackagesByIdApi() {
-        String url = params.isLastVersionKnown() ? apiGetUpdates() : apiFindPackagesById();
+    private PackageRevision nugetexe() {
+        if(params.lowerBoundGiven())
+            throw new RuntimeException(String.format("Polling older version (%s) not supported via nuget.exe", params.getPackageAndVersion()));
+        String[] command = {"nuget", "list", params.getPrefixedPackageId(),
+                "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
+        NuGetCmdOutput nuGetCmdOutput;
+        synchronized (params.getRepoId().intern()) {
+            nuGetCmdOutput = processRunner.execute(command, params.isHttp());
+        }
+        if (nuGetCmdOutput.isSuccess()) {
+            nuGetCmdOutput.validateAndParse(params);
+            return nuGetCmdOutput.getPackageRevision(params.getRepoUrl());
+        }
+        LOGGER.info(nuGetCmdOutput.getErrorDetail());
+        throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary()));
+    }
+
+    private PackageRevision nugetApi() {
+        String url = params.getQuery();
         LOGGER.info(url);
         return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());
     }
-
-    private String apiFindPackagesById() {
-        return String.format("%sFindPackagesById()?$filter=IsLatestVersion&id='%s'",
-                params.getRepoUrlStrWithTrailingSlash(),params.getPackageId());
-    }
-
-    private String apiGetUpdates() {
-        return String.format("%sGetUpdates()?packageIds='%s'&versions='%s'&includePrerelease=true&includeAllVersions=false",
-                params.getRepoUrlStrWithTrailingSlash(),params.getPackageId(), params.getLastKnownVersion());
-    }
-
 
     private String getErrorMessage(String message) {
         return format("Error while querying repository with path '%s' and packageId '%s'. %s",

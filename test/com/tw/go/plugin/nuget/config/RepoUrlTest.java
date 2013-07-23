@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tw.go.plugin.nuget.config.RepoUrl.REPO_URL;
+import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.REPO_URL;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;

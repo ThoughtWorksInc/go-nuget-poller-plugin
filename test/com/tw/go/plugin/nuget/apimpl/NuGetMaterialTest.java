@@ -16,7 +16,7 @@ public class NuGetMaterialTest {
         NuGetMaterial repositoryMaterial = new NuGetMaterial();
         PackageRepositoryConfiguration repositoryConfiguration = repositoryMaterial.getConfig();
         assertThat(repositoryConfiguration, is(notNullValue()));
-        assertThat(repositoryConfiguration, instanceOf(NuGetConfig.class));
+        assertThat(repositoryConfiguration, instanceOf(PluginConfig.class));
     }
 
     @Test

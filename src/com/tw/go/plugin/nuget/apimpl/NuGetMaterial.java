@@ -6,8 +6,8 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageReposito
 @Extension
 public class NuGetMaterial implements PackageRepositoryMaterial {
 
-    public NuGetConfig getConfig() {
-        return new NuGetConfig();
+    public PluginConfig getConfig() {
+        return new PluginConfig();
     }
 
     public NuGetPoller getPoller() {

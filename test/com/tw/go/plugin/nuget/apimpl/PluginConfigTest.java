@@ -5,54 +5,62 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigur
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.nuget.config.InvalidRepoUrl;
-import com.tw.go.plugin.nuget.config.RepoUrl;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tw.go.plugin.nuget.apimpl.NuGetConfig.PACKAGE_ID;
-import static com.tw.go.plugin.nuget.config.RepoUrl.REPO_URL;
+import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.DISPLAY_NAME;
+import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.DISPLAY_ORDER;
+import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.*;
+import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.*;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class NuGetConfigTest {
-    private NuGetConfig nuGetConfig;
+public class PluginConfigTest {
+    private PluginConfig pluginConfig;
 
     @Before
     public void setUp() {
-        nuGetConfig = new NuGetConfig();
+        pluginConfig = new PluginConfig();
     }
 
     @Test
     public void shouldGetRepositoryConfiguration() {
-        PackageConfigurations configurations = nuGetConfig.getRepositoryConfiguration();
+        PackageConfigurations configurations = pluginConfig.getRepositoryConfiguration();
         assertThat(configurations.get(REPO_URL), is(notNullValue()));
         assertThat(configurations.get(REPO_URL).getOption(PackageConfiguration.SECURE), is(false));
         assertThat(configurations.get(REPO_URL).getOption(PackageConfiguration.REQUIRED), is(true));
-        assertThat(configurations.get(REPO_URL).getOption(PackageConfiguration.DISPLAY_NAME), is("Package Source"));
-        assertThat(configurations.get(REPO_URL).getOption(PackageConfiguration.DISPLAY_ORDER), is(0));
-        assertThat(configurations.get(RepoUrl.USERNAME), is(notNullValue()));
-        assertThat(configurations.get(RepoUrl.USERNAME).getOption(PackageConfiguration.SECURE), is(false));
-        assertThat(configurations.get(RepoUrl.USERNAME).getOption(PackageConfiguration.REQUIRED), is(false));
-        assertThat(configurations.get(RepoUrl.USERNAME).getOption(PackageConfiguration.DISPLAY_NAME), is("UserName"));
-        assertThat(configurations.get(RepoUrl.USERNAME).getOption(PackageConfiguration.DISPLAY_ORDER), is(1));
-        assertThat(configurations.get(RepoUrl.PASSWORD), is(notNullValue()));
-        assertThat(configurations.get(RepoUrl.PASSWORD).getOption(PackageConfiguration.SECURE), is(true));
-        assertThat(configurations.get(RepoUrl.PASSWORD).getOption(PackageConfiguration.REQUIRED), is(false));
-        assertThat(configurations.get(RepoUrl.PASSWORD).getOption(PackageConfiguration.DISPLAY_NAME), is("Password"));
-        assertThat(configurations.get(RepoUrl.PASSWORD).getOption(PackageConfiguration.DISPLAY_ORDER), is(2));
+        assertThat(configurations.get(REPO_URL).getOption(DISPLAY_NAME), is("Package Source"));
+        assertThat(configurations.get(REPO_URL).getOption(DISPLAY_ORDER), is(0));
+        assertThat(configurations.get(USERNAME), is(notNullValue()));
+        assertThat(configurations.get(USERNAME).getOption(PackageConfiguration.SECURE), is(false));
+        assertThat(configurations.get(USERNAME).getOption(PackageConfiguration.REQUIRED), is(false));
+        assertThat(configurations.get(USERNAME).getOption(DISPLAY_NAME), is("UserName"));
+        assertThat(configurations.get(USERNAME).getOption(DISPLAY_ORDER), is(1));
+        assertThat(configurations.get(PASSWORD), is(notNullValue()));
+        assertThat(configurations.get(PASSWORD).getOption(PackageConfiguration.SECURE), is(true));
+        assertThat(configurations.get(PASSWORD).getOption(PackageConfiguration.REQUIRED), is(false));
+        assertThat(configurations.get(PASSWORD).getOption(DISPLAY_NAME), is("Password"));
+        assertThat(configurations.get(PASSWORD).getOption(DISPLAY_ORDER), is(2));
     }
 
     @Test
     public void shouldGetPackageConfiguration() {
-        PackageConfigurations configurations = nuGetConfig.getPackageConfiguration();
-        assertThat(configurations.get(PACKAGE_ID), is(notNullValue()));
-        assertThat(configurations.get(NuGetConfig.PACKAGE_ID).getOption(PackageConfiguration.DISPLAY_NAME), is("Package Id"));
-        assertThat(configurations.get(NuGetConfig.PACKAGE_ID).getOption(PackageConfiguration.DISPLAY_ORDER), is(0));
+        PackageConfigurations configurations = pluginConfig.getPackageConfiguration();
+        assertNotNull(configurations.get(PACKAGE_ID));
+        assertThat(configurations.get(PACKAGE_ID).getOption(DISPLAY_NAME), is("Package Id*"));
+        assertThat(configurations.get(PACKAGE_ID).getOption(DISPLAY_ORDER), is(0));
+        assertNotNull(configurations.get(POLL_VERSION_FROM));
+        assertThat(configurations.get(POLL_VERSION_FROM).getOption(DISPLAY_NAME), is("Version to poll >="));
+        assertThat(configurations.get(POLL_VERSION_FROM).getOption(DISPLAY_ORDER), is(1));
+        assertNotNull(configurations.get(POLL_VERSION_TO));
+        assertThat(configurations.get(POLL_VERSION_TO).getOption(DISPLAY_NAME), is("Version to poll <"));
+        assertThat(configurations.get(POLL_VERSION_TO).getOption(DISPLAY_ORDER), is(2));
     }
 
     @Test
@@ -96,7 +104,7 @@ public class NuGetConfigTest {
 
     private void assertForRepositoryConfigurationErrors(PackageConfigurations repositoryConfigurations, List<ValidationError> expectedErrors, boolean expectedValidationResult) {
         Errors errors = new Errors();
-        boolean result = nuGetConfig.isRepositoryConfigurationValid(repositoryConfigurations, errors);
+        boolean result = pluginConfig.isRepositoryConfigurationValid(repositoryConfigurations, errors);
         assertThat(result, is(expectedValidationResult));
         assertThat(errors.getErrors().size(), is(expectedErrors.size()));
         assertThat(errors.getErrors().containsAll(expectedErrors), is(true));
@@ -104,7 +112,7 @@ public class NuGetConfigTest {
 
     private void assertForPackageConfigurationErrors(PackageConfigurations packageConfigurations, List<ValidationError> expectedErrors, boolean expectedValidationResult) {
         Errors errors = new Errors();
-        boolean result = nuGetConfig.isPackageConfigurationValid(packageConfigurations, new PackageConfigurations(), errors);
+        boolean result = pluginConfig.isPackageConfigurationValid(packageConfigurations, new PackageConfigurations(), errors);
         assertThat(result, is(expectedValidationResult));
         assertThat(errors.getErrors().size(), is(expectedErrors.size()));
         assertThat(errors.getErrors().containsAll(expectedErrors), is(true));

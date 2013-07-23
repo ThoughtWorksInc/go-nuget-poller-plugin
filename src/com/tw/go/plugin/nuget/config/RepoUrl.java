@@ -6,9 +6,6 @@ import com.tw.go.plugin.util.StringUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public abstract class RepoUrl {
-    public static final String REPO_URL = "REPO_URL";
-    public static final String USERNAME = "USERNAME";
-    public static final String PASSWORD = "PASSWORD";
     protected final String url;
     protected Credentials credentials;
 
@@ -24,7 +21,7 @@ public abstract class RepoUrl {
     public abstract void validate(Errors errors);
 
     public void doBasicValidations(Errors errors) {
-        if (StringUtil.isBlank(url)) errors.addError(new ValidationError(REPO_URL, "Repository url is empty"));
+        if (StringUtil.isBlank(url)) errors.addError(new ValidationError(NuGetRepoConfig.REPO_URL, "Repository url is empty"));
     }
 
     public abstract void checkConnection();

@@ -6,27 +6,28 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigur
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
-import com.tw.go.plugin.nuget.config.RepoUrl;
+import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
+import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.*;
-import static com.tw.go.plugin.nuget.config.RepoUrl.PASSWORD;
-import static com.tw.go.plugin.nuget.config.RepoUrl.REPO_URL;
-import static com.tw.go.plugin.nuget.config.RepoUrl.USERNAME;
-import static org.apache.commons.lang3.StringUtils.contains;
+import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public class NuGetConfig implements PackageRepositoryConfiguration {
+public class PluginConfig implements PackageRepositoryConfiguration {
 
-    private static Logger LOGGER = Logger.getLoggerFor(NuGetConfig.class);
+    private static Logger LOGGER = Logger.getLoggerFor(PluginConfig.class);
     public static final PackageConfiguration REPO_CONFIG_REPO_URL =
             new PackageConfiguration(REPO_URL).with(DISPLAY_NAME, "Package Source").with(DISPLAY_ORDER, 0);
     public static final PackageConfiguration REPO_CONFIG_USERNAME =
             new PackageConfiguration(USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1);
     public static final PackageConfiguration REPO_CONFIG_PASSWORD =
             new PackageConfiguration(PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2);
-    public static final String PACKAGE_ID = "PACKAGE_ID";
     public static final PackageConfiguration PKG_CONFIG_PACKAGE_ID =
-            new PackageConfiguration(PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
+            new PackageConfiguration(NuGetPackageConfig.PACKAGE_ID).with(DISPLAY_NAME, "Package Id*").with(DISPLAY_ORDER, 0);
+    public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_FROM =
+            new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_FROM).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1);
+    public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_TO =
+            new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_TO).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2);
 
     public PackageConfigurations getRepositoryConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();
@@ -39,24 +40,21 @@ public class NuGetConfig implements PackageRepositoryConfiguration {
     public PackageConfigurations getPackageConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();
         configurations.addConfiguration(PKG_CONFIG_PACKAGE_ID);
+        configurations.addConfiguration(PKG_CONFIG_POLL_VERSION_FROM);
+        configurations.addConfiguration(PKG_CONFIG_POLL_VERSION_TO);
         return configurations;
     }
 
     public boolean isRepositoryConfigurationValid(PackageConfigurations repoConfigs, Errors errors) {
-
-        PackageConfiguration repoUrlConfig = repoConfigs.get(REPO_URL);
-        if (repoUrlConfig == null) {
+        NuGetRepoConfig nuGetRepoConfig = new NuGetRepoConfig(repoConfigs);
+        if (nuGetRepoConfig.isRepoUrlMissing()) {
             String message = "Repository url not specified";
             LOGGER.error(message);
             errors.addError(new ValidationError(REPO_URL, message));
             return false;
         }
-
-        RepoUrl.create(
-                repoUrlConfig.getValue(),
-                stringValueOf(repoConfigs.get(USERNAME)),
-                stringValueOf(repoConfigs.get(PASSWORD))).validate(errors);
-        detectInvalidKeys(repoConfigs, errors, new String[]{REPO_URL, USERNAME, PASSWORD});
+        nuGetRepoConfig.getRepoUrl().validate(errors);
+        detectInvalidKeys(repoConfigs, errors, nuGetRepoConfig.getValidKeys());
         return !errors.hasErrors();
     }
 
@@ -72,36 +70,31 @@ public class NuGetConfig implements PackageRepositoryConfiguration {
         }
     }
 
-    public String stringValueOf(PackageConfiguration packageConfiguration) {
-        if (packageConfiguration == null) return null;
-        return packageConfiguration.getValue();
-    }
-
     public boolean isPackageConfigurationValid(PackageConfigurations packageConfig, PackageConfigurations repoConfig, Errors errors) {
-        PackageConfiguration packageIdConfig = packageConfig.get(PACKAGE_ID);
-        if (packageIdConfig == null) {
+        NuGetPackageConfig nuGetPackageConfig = new NuGetPackageConfig(packageConfig);
+        if (nuGetPackageConfig.isPackageIdMissing()) {
             String message = "Package id not specified";
             LOGGER.info(message);
-            errors.addError(new ValidationError(PACKAGE_ID, message));
+            errors.addError(new ValidationError(NuGetPackageConfig.PACKAGE_ID, message));
             return false;
         }
-        String packageId = packageIdConfig.getValue();
+        String packageId = nuGetPackageConfig.getPackageId();
         if (packageId == null) {
             String message = "Package id is null";
             LOGGER.info(message);
-            errors.addError(new ValidationError(PACKAGE_ID, message));
+            errors.addError(new ValidationError(NuGetPackageConfig.PACKAGE_ID, message));
         }
         if (packageId != null && isBlank(packageId.trim())) {
             String message = "Package id is empty";
             LOGGER.info(message);
-            errors.addError(new ValidationError(PACKAGE_ID, message));
+            errors.addError(new ValidationError(NuGetPackageConfig.PACKAGE_ID, message));
         }
         if (packageId != null && (packageId.contains("*") || packageId.contains("?"))) {
             String message = String.format("Package id [%s] is invalid", packageId);
             LOGGER.info(message);
-            errors.addError(new ValidationError(PACKAGE_ID, message));
+            errors.addError(new ValidationError(NuGetPackageConfig.PACKAGE_ID, message));
         }
-        detectInvalidKeys(packageConfig, errors, new String[]{PACKAGE_ID});
+        detectInvalidKeys(packageConfig, errors, nuGetPackageConfig.getValidKeys());
         return !errors.hasErrors();
     }
 
