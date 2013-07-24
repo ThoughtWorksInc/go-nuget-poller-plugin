@@ -28,6 +28,8 @@ public class PluginConfig implements PackageRepositoryConfiguration {
             new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1);
     public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_TO =
             new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_TO).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2);
+    public static final PackageConfiguration PKG_CONFIG_INCLUDE_PRE_RELEASE =
+            new PackageConfiguration(NuGetPackageConfig.INCLUDE_PRE_RELEASE).with(REQUIRED, false).with(DISPLAY_NAME, "Include Prerelease? (yes/no, defaults to yes)").with(DISPLAY_ORDER, 3);
 
     public PackageConfigurations getRepositoryConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();
@@ -42,6 +44,7 @@ public class PluginConfig implements PackageRepositoryConfiguration {
         configurations.addConfiguration(PKG_CONFIG_PACKAGE_ID);
         configurations.addConfiguration(PKG_CONFIG_POLL_VERSION_FROM);
         configurations.addConfiguration(PKG_CONFIG_POLL_VERSION_TO);
+        configurations.addConfiguration(PKG_CONFIG_INCLUDE_PRE_RELEASE);
         return configurations;
     }
 

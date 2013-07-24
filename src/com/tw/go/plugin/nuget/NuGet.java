@@ -22,10 +22,10 @@ public class NuGet {
         this.params = params;
     }
 
-    public PackageRevision execute() {
+    public PackageRevision poll() {
         if (!params.isHttp()) return nugetexe();
         try {
-            return nugetApi();
+            return pollByAPI();
         } catch (NuGetException apiFail) {
             throw apiFail;
         } catch (RuntimeException ex) {
@@ -34,8 +34,8 @@ public class NuGet {
     }
 
     private PackageRevision nugetexe() {
-        if(params.lowerBoundGiven())
-            throw new RuntimeException(String.format("Polling older version (%s) not supported via nuget.exe", params.getPackageAndVersion()));
+        if(params.notPollingForLatest())
+            throw new RuntimeException(String.format("Polling with version constraints (%s) not supported via nuget.exe", params.getPackageAndVersion()));
         String[] command = {"nuget", "list", params.getPrefixedPackageId(),
                 "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
         NuGetCmdOutput nuGetCmdOutput;
@@ -50,7 +50,7 @@ public class NuGet {
         throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary()));
     }
 
-    private PackageRevision nugetApi() {
+    private PackageRevision pollByAPI() {
         String url = params.getQuery();
         LOGGER.info(url);
         return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());

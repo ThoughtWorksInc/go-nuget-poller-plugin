@@ -7,6 +7,7 @@ import java.util.Date;
 public class NuGetPackage {
     public static final String PACKAGE_DESCRIPTION = "DESCRIPTION";
     public static final String PACKAGE_LOCATION = "LOCATION";
+    //TODO:change this to version once version renamed to label
     public static final String PACKAGE_VERSIONONLY = "VERSIONONLY";
 
     public String getPackageName() {

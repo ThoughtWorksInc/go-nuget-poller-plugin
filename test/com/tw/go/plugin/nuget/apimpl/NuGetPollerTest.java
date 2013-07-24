@@ -31,11 +31,11 @@ public class NuGetPollerTest {
         when(pkgCfgs.get(NuGetPackageConfig.PACKAGE_ID)).thenReturn(packageConfiguration);
         PackageRevision dummyResult = new PackageRevision("1.0", new Date(),"user");
         RepoUrl repoUrl = RepoUrl.create(repoUrlStr, user, password);
-        NuGetParams params = new NuGetParams(repoUrl, packageId, null, null, null);
-        doReturn(dummyResult).when(spy).executeNuGetCmd(params);
+        NuGetParams params = new NuGetParams(repoUrl, packageId, null, null, null, true);
+        doReturn(dummyResult).when(spy).poll(params);
         //actual test
         spy.getLatestRevision(pkgCfgs, repoCfgs);
-        verify(spy).executeNuGetCmd(params);
+        verify(spy).poll(params);
     }
 
 }

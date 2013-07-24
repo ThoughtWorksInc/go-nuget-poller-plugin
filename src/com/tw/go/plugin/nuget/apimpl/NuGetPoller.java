@@ -23,8 +23,8 @@ public class NuGetPoller implements PackageRepositoryPoller {
                 new NuGetRepoConfig(repoConfig).getRepoUrl(),
                 nuGetPackageConfig.getPackageId(),
                 nuGetPackageConfig.getPollVersionFrom(),
-                nuGetPackageConfig.getPollVersionTo(), null);
-        PackageRevision packageRevision = executeNuGetCmd(params);
+                nuGetPackageConfig.getPollVersionTo(), null, nuGetPackageConfig.isIncludePreRelease());
+        PackageRevision packageRevision = poll(params);
         LOGGER.info(String.format("getLatestRevision returning with %s, %s",
                 packageRevision.getRevision(), packageRevision.getTimestamp()));
         return packageRevision;
@@ -40,8 +40,8 @@ public class NuGetPoller implements PackageRepositoryPoller {
                 nuGetPackageConfig.getPackageId(),
                 nuGetPackageConfig.getPollVersionFrom(),
                 nuGetPackageConfig.getPollVersionTo(),
-                previouslyKnownRevision);
-        PackageRevision updatedPackage = executeNuGetCmd(params);
+                previouslyKnownRevision, nuGetPackageConfig.isIncludePreRelease());
+        PackageRevision updatedPackage = poll(params);
         if (updatedPackage == null) {
             LOGGER.info(String.format("no modification since %s", previouslyKnownRevision.getRevision()));
             return null;
@@ -68,7 +68,7 @@ public class NuGetPoller implements PackageRepositoryPoller {
         }
     }
 
-    PackageRevision executeNuGetCmd(NuGetParams params) {
-        return new NuGet(params).execute();
+    PackageRevision poll(NuGetParams params) {
+        return new NuGet(params).poll();
     }
 }

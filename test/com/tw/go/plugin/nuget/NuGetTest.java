@@ -46,9 +46,9 @@ public class NuGetTest {
         NuGetCmdOutput nuGetCmdOutput = mock(NuGetCmdOutput.class);
         when(processRunner.execute(expectedCommand, true)).thenReturn(nuGetCmdOutput);
         RepoUrl repoUrl = RepoUrl.create(repourlStr, null, null);
-        NuGetParams params = new NuGetParams(repoUrl, packageId, null, null, null);
+        NuGetParams params = new NuGetParams(repoUrl, packageId, null, null, null, true);
         when(nuGetCmdOutput.isSuccess()).thenReturn(true);
-        new NuGet(processRunner, params).execute();
+        new NuGet(processRunner, params).poll();
 
         verify(processRunner).execute(expectedCommand, true);
         verify(nuGetCmdOutput).getPackageRevision(repoUrl);
@@ -61,7 +61,7 @@ public class NuGetTest {
         stdErr.add("err msg");
         when(processRunner.execute(Matchers.<String[]>any(), eq(true))).thenReturn(new NuGetCmdOutput(1, null, stdErr));
         try {
-            new NuGet(processRunner, new NuGetParams(RepoUrl.create("http://url", null, null), "wix", null, null, null)).execute();
+            new NuGet(processRunner, new NuGetParams(RepoUrl.create("http://url", null, null), "wix", null, null, null, true)).poll();
             fail("expected exception");
         } catch (Exception success) {
             assertThat(success.getMessage(), is("Error while querying repository with path 'http://url' and packageId 'wix'. Error Message: err msg"));
@@ -103,7 +103,7 @@ public class NuGetTest {
         }
 
         public void run() {
-            PackageRevision result = new NuGet(new NuGetParams(RepoUrl.create(repoUrl, null, null), "RouteMagic", null, null, null)).execute();
+            PackageRevision result = new NuGet(new NuGetParams(RepoUrl.create(repoUrl, null, null), "RouteMagic", null, null, null, true)).poll();
             System.out.println(result.getRevision());
             System.out.println(result.getDataFor(PACKAGE_LOCATION));
             System.out.println(result.getDataFor(NuGetPackage.PACKAGE_DESCRIPTION));
@@ -112,55 +112,14 @@ public class NuGetTest {
 
     @Test
     public void shouldReportLocationCorrectly(){
-        PackageRevision result = new NuGet(new NuGetParams(RepoUrl.create("file://d:/tmp/nuget-local-repo", null, null), "RouteMagic", null, null, null)).execute();
+        PackageRevision result = new NuGet(new NuGetParams(RepoUrl.create("file://d:/tmp/nuget-local-repo", null, null), "RouteMagic", null, null, null, true)).poll();
         assertThat(result.getDataFor(PACKAGE_LOCATION), is("file://d:/tmp/nuget-local-repo/RouteMagic.1.2.nupkg"));
-        result = new NuGet(new NuGetParams(RepoUrl.create("\\\\insrinaray\\nuget-local-repo", null, null), "RouteMagic", null, null, null)).execute();
+        result = new NuGet(new NuGetParams(RepoUrl.create("\\\\insrinaray\\nuget-local-repo", null, null), "RouteMagic", null, null, null, true)).poll();
         assertThat(result.getDataFor(PACKAGE_LOCATION), is("\\\\insrinaray\\nuget-local-repo\\RouteMagic.1.2.nupkg"));
-        result = new NuGet(new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null), "RouteMagic.Mvc", null, null, null)).execute();
+        result = new NuGet(new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null), "RouteMagic.Mvc", null, null, null, true)).poll();
         assertThat(result.getDataFor(PACKAGE_LOCATION), is("http://www.nuget.org/api/v2/package/RouteMagic.Mvc/1.2"));
     }
 
-    @Test
-    public void shouldHandleUpperBound(){
-        NuGetParams params = new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null),
-                "RouteMagic", null, "1.2", null);
-        assertThat(params.getQuery(),
-                is("http://www.nuget.org/api/v2/FindPackagesById()?id='RouteMagic'&$filter=Version%20lt%20'1.2'&$orderby=Version%20desc&$top=1"));
-    }
-    @Test
-    public void shouldHandleLowerBound(){
-        NuGetParams params = new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null),
-                "RouteMagic", "1.3", null, null);
-        assertThat(params.getQuery(),
-                is("http://www.nuget.org/api/v2/FindPackagesById()?id='RouteMagic'&$filter=Version%20ge%20'1.3'&$orderby=Version%20desc&$top=1"));
-    }
-    @Test
-    public void shouldHandleLowerAndUpperBound(){
-        NuGetParams params = new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null),
-                "RouteMagic", "1.1.2", "1.4", null);
-        assertThat(params.getQuery(),
-                is("http://www.nuget.org/api/v2/FindPackagesById()?id='RouteMagic'&$filter=Version%20ge%20'1.1.2'%20and%20Version%20lt%20'1.4'&$orderby=Version%20desc&$top=1"));
-    }
-    @Test
-    public void shouldHandleUpperBoundDuringUpdate(){
-        PackageRevision known = new PackageRevision("1.1.2",null,"abc");
-        known.addData(PACKAGE_VERSIONONLY,"1.1.2");
-//        PackageRevision result = new NuGet(new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null), "RouteMagic", null, "1.4", known)).execute();
-//        assertThat(result.getDataFor(PACKAGE_LOCATION), is("file://d:/tmp/nuget-local-repo/RouteMagic.1.2.nupkg"));
-        NuGetParams params = new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null),
-                "RouteMagic", null, "1.4", known);
-        assertThat(params.getQuery(),
-                is("http://www.nuget.org/api/v2/GetUpdates()?packageIds='RouteMagic'&versions='1.1.2'&includePrerelease=false&includeAllVersions=true&$filter=Version%20lt%20'1.4'&$orderby=Version%20desc&$top=1"));
-    }
-    @Test
-    public void shouldIgnoreLowerBoundDuringUpdate(){
-        PackageRevision known = new PackageRevision("1.1.2",null,"abc");
-        known.addData(PACKAGE_VERSIONONLY,"1.1.2");
-        NuGetParams params = new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null),
-                "RouteMagic", "1.0", null, known);
-        assertThat(params.getQuery(),
-                is("http://www.nuget.org/api/v2/GetUpdates()?packageIds='RouteMagic'&versions='1.1.2'&includePrerelease=false&includeAllVersions=false"));
-    }
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
@@ -168,14 +127,14 @@ public class NuGetTest {
     public void shouldFailIfNoPackagesFound(){
         expectedEx.expect(NuGetException.class);
         expectedEx.expectMessage("No such package found");
-        new NuGet(new NuGetParams(RepoUrl.create("http://nuget.org/api/v2/", null, null), "Rou", null, null, null)).execute();
+        new NuGet(new NuGetParams(RepoUrl.create("http://nuget.org/api/v2/", null, null), "Rou", null, null, null, true)).poll();
     }
 
     @Test
     public void shouldGetUpdateWhenLastVersionKnown() throws ParseException {
         PackageRevision lastKnownVersion = new PackageRevision("1Password-1.0.9.288", new SimpleDateFormat("yyyy-MM-dd").parse("2013-03-21"), "xyz");
         lastKnownVersion.addData(PACKAGE_VERSIONONLY, "1.0.9.288");
-        PackageRevision result = new NuGet(new NuGetParams(RepoUrl.create("http://chocolatey.org/api/v2", null, null), "1Password", null, null, lastKnownVersion)).execute();
+        PackageRevision result = new NuGet(new NuGetParams(RepoUrl.create("http://chocolatey.org/api/v2", null, null), "1Password", null, null, lastKnownVersion, true)).poll();
         assertThat(result.getDataFor(PACKAGE_VERSIONONLY), is("1.0.9.332"));
     }
 
@@ -183,8 +142,8 @@ public class NuGetTest {
     public void shouldReturnNullIfNoNewerRevision() throws ParseException {
         PackageRevision lastKnownVersion = new PackageRevision("1Password-1.0.9.332", new SimpleDateFormat("yyyy-MM-dd").parse("2013-03-21"), "xyz");
         lastKnownVersion.addData(PACKAGE_VERSIONONLY, "1.0.9.332");
-        NuGetParams params = new NuGetParams(RepoUrl.create("http://chocolatey.org/api/v2", null, null), "1Password", null, null, lastKnownVersion);
-        assertNull(new NuGet(params).execute());
+        NuGetParams params = new NuGetParams(RepoUrl.create("http://chocolatey.org/api/v2", null, null), "1Password", null, null, lastKnownVersion, true);
+        assertNull(new NuGet(params).poll());
 
     }
 }

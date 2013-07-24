@@ -2,11 +2,6 @@ package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.tw.go.plugin.nuget.config.RepoUrl;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.client.utils.URIUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSIONONLY;
 
@@ -17,14 +12,15 @@ public class NuGetParams {
     private String pollVersionFrom = LATEST;
     private String pollVersionTo = LATEST;
     private PackageRevision lastKnownVersion = null;
-    private boolean includePreRelease = false;//TODO: surface this option
+    private boolean includePreRelease = true;//TODO: surface this option
 
-    public NuGetParams(RepoUrl repoUrl, String packageId, String pollVersionFrom, String pollVersionTo, PackageRevision previouslyKnownRevision) {
+    public NuGetParams(RepoUrl repoUrl, String packageId, String pollVersionFrom, String pollVersionTo, PackageRevision previouslyKnownRevision, boolean includePreReleaseVersions) {
         this.repoUrl = repoUrl;
         this.packageId = packageId;
-        if(pollVersionFrom != null) this.pollVersionFrom = pollVersionFrom;
-        if(pollVersionTo != null) this.pollVersionTo = pollVersionTo;
+        if (pollVersionFrom != null) this.pollVersionFrom = pollVersionFrom;
+        if (pollVersionTo != null) this.pollVersionTo = pollVersionTo;
         this.lastKnownVersion = previouslyKnownRevision;
+        this.includePreRelease = includePreReleaseVersions;
     }
 
     public String getRepoId() {
@@ -62,6 +58,7 @@ public class NuGetParams {
     }
 
     public String getLastKnownVersion() {
+        if (lastKnownVersion == null) return null;
         return lastKnownVersion.getDataFor(PACKAGE_VERSIONONLY);
     }
 
@@ -74,43 +71,28 @@ public class NuGetParams {
     }
 
     public String getPackageAndVersion() {
-        return packageId + "." + pollVersionFrom;
+        return String.format("%s, v%s to v%s", packageId, pollVersionFrom, pollVersionTo);
     }
 
     public String getQuery() {
-        return isLastVersionKnown() ? getQuery(true) : getQuery(false);
-    }
-
-    private String getQuery(boolean getUpdate) {
         StringBuilder query = new StringBuilder();
         query.append(getRepoUrlStrWithTrailingSlash());
-        if (getUpdate) {
-            query.append("GetUpdates()?");
-            query.append(String.format("packageIds='%s'", getPackageId()));
-            query.append(String.format("&versions='%s'", getLastKnownVersion()));
-            query.append("&includePrerelease=").append(includePreRelease);
-            if (upperBoundGiven()) {
-                query.append("&includeAllVersions=true");
-                query.append("&$filter=Version%20lt%20'").append(pollVersionTo).append("'&$orderby=Version%20desc&$top=1");
-            } else {
-                query.append("&includeAllVersions=false");
-            }
-        } else {
-            query.append("FindPackagesById()?");
-            query.append(String.format("id='%s'&", getPackageId()));
-            if (lowerBoundGiven() && upperBoundGiven()) {
-                query.append("$filter=Version%20ge%20'").append(pollVersionFrom).
-                        append("'%20and%20Version%20lt%20'").append(pollVersionTo).
-                        append("'&$orderby=Version%20desc&$top=1");
-            }else if (lowerBoundGiven()) {
-                query.append("$filter=Version%20ge%20'").append(pollVersionFrom).append("'&$orderby=Version%20desc&$top=1");
-            }else if(upperBoundGiven()){
-                query.append("$filter=Version%20lt%20'").append(pollVersionTo).append("'&$orderby=Version%20desc&$top=1");
-            }else {
-                query.append("$filter=IsLatestVersion");
-            }
+        query.append("GetUpdates()?");
+        query.append(String.format("packageIds='%s'", getPackageId()));
+        query.append(String.format("&versions='%s'", getEffectiveLowerBound()));
+        query.append("&includePrerelease=").append(includePreRelease);
+        query.append("&includeAllVersions=true");//has to be true, filter gets applied later
+        if (upperBoundGiven()) {
+            query.append("&$filter=Version%20lt%20'").append(pollVersionTo).append("'");
         }
+        query.append("&$orderby=Version%20desc&$top=1");
         return query.toString();
+    }
+
+    private String getEffectiveLowerBound() {
+        if (getLastKnownVersion() != null) return getLastKnownVersion();
+        if (lowerBoundGiven()) return pollVersionFrom;
+        return "0.0.1";
     }
 
     @Override
@@ -142,5 +124,9 @@ public class NuGetParams {
         result = 31 * result + (lastKnownVersion != null ? lastKnownVersion.hashCode() : 0);
         result = 31 * result + (includePreRelease ? 1 : 0);
         return result;
+    }
+
+    public boolean notPollingForLatest() {
+        return upperBoundGiven() || lowerBoundGiven();
     }
 }
