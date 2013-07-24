@@ -23,11 +23,11 @@ public class PluginConfig implements PackageRepositoryConfiguration {
     public static final PackageConfiguration REPO_CONFIG_PASSWORD =
             new PackageConfiguration(PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2);
     public static final PackageConfiguration PKG_CONFIG_PACKAGE_ID =
-            new PackageConfiguration(NuGetPackageConfig.PACKAGE_ID).with(DISPLAY_NAME, "Package Id*").with(DISPLAY_ORDER, 0);
+            new PackageConfiguration(NuGetPackageConfig.PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
     public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_FROM =
-            new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_FROM).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1);
+            new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1);
     public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_TO =
-            new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_TO).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2);
+            new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_TO).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2);
 
     public PackageConfigurations getRepositoryConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();

@@ -13,6 +13,7 @@ import java.util.List;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.DISPLAY_NAME;
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.DISPLAY_ORDER;
+import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.REQUIRED;
 import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.*;
 import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.*;
 import static java.util.Arrays.asList;
@@ -53,14 +54,16 @@ public class PluginConfigTest {
     public void shouldGetPackageConfiguration() {
         PackageConfigurations configurations = pluginConfig.getPackageConfiguration();
         assertNotNull(configurations.get(PACKAGE_ID));
-        assertThat(configurations.get(PACKAGE_ID).getOption(DISPLAY_NAME), is("Package Id*"));
+        assertThat(configurations.get(PACKAGE_ID).getOption(DISPLAY_NAME), is("Package Id"));
         assertThat(configurations.get(PACKAGE_ID).getOption(DISPLAY_ORDER), is(0));
         assertNotNull(configurations.get(POLL_VERSION_FROM));
         assertThat(configurations.get(POLL_VERSION_FROM).getOption(DISPLAY_NAME), is("Version to poll >="));
         assertThat(configurations.get(POLL_VERSION_FROM).getOption(DISPLAY_ORDER), is(1));
+        assertThat(configurations.get(POLL_VERSION_FROM).getOption(REQUIRED), is(false));
         assertNotNull(configurations.get(POLL_VERSION_TO));
         assertThat(configurations.get(POLL_VERSION_TO).getOption(DISPLAY_NAME), is("Version to poll <"));
         assertThat(configurations.get(POLL_VERSION_TO).getOption(DISPLAY_ORDER), is(2));
+        assertThat(configurations.get(POLL_VERSION_TO).getOption(REQUIRED), is(false));
     }
 
     @Test
