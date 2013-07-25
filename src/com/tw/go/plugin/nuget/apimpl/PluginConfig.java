@@ -9,6 +9,8 @@ import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 
+import java.util.Arrays;
+
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.*;
 import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -69,7 +71,7 @@ public class PluginConfig implements PackageRepositoryConfiguration {
                     valid = true; break;
                 }
             }
-            if(!valid) errors.addError(new ValidationError("Unrecognized key: " + config.getKey()));
+            if(!valid) errors.addError(new ValidationError(String.format("Unsupported key: %s. Valid keys: %s", config.getKey(), Arrays.toString(validKeys))));
         }
     }
 

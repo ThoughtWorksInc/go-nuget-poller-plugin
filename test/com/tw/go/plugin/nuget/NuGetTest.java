@@ -64,7 +64,8 @@ public class NuGetTest {
             new NuGet(processRunner, new NuGetParams(RepoUrl.create("http://url", null, null), "wix", null, null, null, true)).poll();
             fail("expected exception");
         } catch (Exception success) {
-            assertThat(success.getMessage(), is("Error while querying repository with path 'http://url' and packageId 'wix'. Error Message: err msg"));
+            assertThat(success.getMessage(),
+                    is("Falling back to nuget.exe after API error: RuntimeException: UnknownHostException (url) while getting package feed for : http://url/GetUpdates()?packageIds='wix'&versions='0.0.1'&includePrerelease=true&includeAllVersions=true&$orderby=Version%20desc&$top=1 \nnuget.exe: Error while querying repository with path 'http://url' and packageId 'wix'. Error Message: err msg"));
         }
         verify(processRunner).execute(Matchers.<String[]>any(), eq(true));
     }

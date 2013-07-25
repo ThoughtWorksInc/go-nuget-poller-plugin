@@ -23,17 +23,17 @@ public class NuGet {
     }
 
     public PackageRevision poll() {
-        if (!params.isHttp()) return nugetexe();
+        if (!params.isHttp()) return nugetexe(null);
         try {
             return pollByAPI();
         } catch (NuGetException apiFail) {
             throw apiFail;
-        } catch (RuntimeException ex) {
-            return nugetexe();
+        } catch (RuntimeException apiError) {
+            return nugetexe(apiError);
         }
     }
 
-    private PackageRevision nugetexe() {
+    private PackageRevision nugetexe(RuntimeException apiError) {
         if(params.notPollingForLatest())
             throw new RuntimeException(String.format("Polling with version constraints (%s) not supported via nuget.exe", params.getPackageAndVersion()));
         String[] command = {"nuget", "list", params.getPrefixedPackageId(),
@@ -47,7 +47,7 @@ public class NuGet {
             return nuGetCmdOutput.getPackageRevision(params.getRepoUrl());
         }
         LOGGER.info(nuGetCmdOutput.getErrorDetail());
-        throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary()));
+        throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary(), apiError));
     }
 
     private PackageRevision pollByAPI() {
@@ -56,9 +56,15 @@ public class NuGet {
         return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());
     }
 
-    private String getErrorMessage(String message) {
-        return format("Error while querying repository with path '%s' and packageId '%s'. %s",
-                params.getRepoUrlStr(), params.getPackageId(), message);
+    private String getErrorMessage(String message, RuntimeException apiError) {
+        StringBuilder sb = new StringBuilder();
+        if(apiError != null){
+            sb.append("Falling back to nuget.exe after API error: ").
+                    append(apiError.getClass().getSimpleName()).append(": ").append(apiError.getMessage()).append("\n");
+        }
+        sb.append(format("nuget.exe: Error while querying repository with path '%s' and packageId '%s'. %s",
+                params.getRepoUrlStr(), params.getPackageId(), message));
+        return sb.toString();
     }
 
 }

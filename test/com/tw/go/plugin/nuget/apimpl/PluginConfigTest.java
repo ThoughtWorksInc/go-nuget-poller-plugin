@@ -5,10 +5,13 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigur
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.nuget.config.InvalidRepoUrl;
+import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
+import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.DISPLAY_NAME;
@@ -81,7 +84,7 @@ public class PluginConfigTest {
         repoConfig.add(new PackageConfiguration("unsupported_key", "value"));
         assertForRepositoryConfigurationErrors(
                 repoConfig,
-                asList(new ValidationError("Unrecognized key: unsupported_key")),
+                asList(new ValidationError("Unsupported key: unsupported_key. Valid keys: "+ Arrays.toString(NuGetRepoConfig.getValidKeys()))),
                 false);
 
     }
@@ -92,7 +95,7 @@ public class PluginConfigTest {
         pkgConfig.add(new PackageConfiguration("unsupported_key", "value"));
         assertForPackageConfigurationErrors(
                 pkgConfig,
-                asList(new ValidationError("Unrecognized key: unsupported_key")),
+                asList(new ValidationError("Unsupported key: unsupported_key. Valid keys: "+ Arrays.toString(NuGetPackageConfig.getValidKeys()))),
                 false);
     }
 

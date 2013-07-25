@@ -24,7 +24,7 @@ public class NuGetPackageConfig {
         return packageIdConfig.getValue();
     }
 
-    public String[] getValidKeys() {
+    public static String[] getValidKeys() {
         return new String[]{PACKAGE_ID, POLL_VERSION_FROM, POLL_VERSION_TO, INCLUDE_PRE_RELEASE};
     }
 

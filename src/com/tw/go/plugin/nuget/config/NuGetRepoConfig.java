@@ -31,7 +31,7 @@ public class NuGetRepoConfig {
         return repoUrlConfig == null;
     }
 
-    public String[] getValidKeys() {
+    public static String[] getValidKeys() {
         return new String[]{REPO_URL, USERNAME, PASSWORD};
     }
 }
