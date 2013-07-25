@@ -12,6 +12,7 @@ import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 import java.util.Arrays;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.*;
+import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.PACKAGE_ID;
 import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -25,7 +26,7 @@ public class PluginConfig implements PackageRepositoryConfiguration {
     public static final PackageConfiguration REPO_CONFIG_PASSWORD =
             new PackageConfiguration(PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2);
     public static final PackageConfiguration PKG_CONFIG_PACKAGE_ID =
-            new PackageConfiguration(NuGetPackageConfig.PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
+            new PackageConfiguration(PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
     public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_FROM =
             new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1);
     public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_TO =
@@ -80,32 +81,38 @@ public class PluginConfig implements PackageRepositoryConfiguration {
         if (nuGetPackageConfig.isPackageIdMissing()) {
             String message = "Package id not specified";
             LOGGER.info(message);
-            errors.addError(new ValidationError(NuGetPackageConfig.PACKAGE_ID, message));
+            errors.addError(new ValidationError(PACKAGE_ID, message));
             return false;
         }
         String packageId = nuGetPackageConfig.getPackageId();
         if (packageId == null) {
             String message = "Package id is null";
             LOGGER.info(message);
-            errors.addError(new ValidationError(NuGetPackageConfig.PACKAGE_ID, message));
+            errors.addError(new ValidationError(PACKAGE_ID, message));
         }
         if (packageId != null && isBlank(packageId.trim())) {
             String message = "Package id is empty";
             LOGGER.info(message);
-            errors.addError(new ValidationError(NuGetPackageConfig.PACKAGE_ID, message));
+            errors.addError(new ValidationError(PACKAGE_ID, message));
         }
         if (packageId != null && (packageId.contains("*") || packageId.contains("?"))) {
             String message = String.format("Package id [%s] is invalid", packageId);
             LOGGER.info(message);
-            errors.addError(new ValidationError(NuGetPackageConfig.PACKAGE_ID, message));
+            errors.addError(new ValidationError(PACKAGE_ID, message));
         }
-        detectInvalidKeys(packageConfig, errors, nuGetPackageConfig.getValidKeys());
+        detectInvalidKeys(packageConfig, errors, NuGetPackageConfig.getValidKeys());
+        NuGetRepoConfig nuGetRepoConfig = new NuGetRepoConfig(repoConfig);
+        if(!nuGetRepoConfig.isHttp() && nuGetPackageConfig.hasBounds()){
+            String message = "Version constraints are only supported for NuGet feed servers";
+            LOGGER.info(message);
+            errors.addError(new ValidationError(message));
+        }
         return !errors.hasErrors();
     }
 
     public void testConnection(PackageConfigurations packageConfigurations, PackageConfigurations repositoryConfigurations) {
         try {
-            new NuGetPoller().getLatestRevision(packageConfigurations, repositoryConfigurations);
+            new PollerImpl().getLatestRevision(packageConfigurations, repositoryConfigurations);
         } catch (Exception e) {
             String message = "Test Connection failed: " + e.getMessage();
             LOGGER.warn(message);

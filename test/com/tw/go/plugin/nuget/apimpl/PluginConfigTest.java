@@ -118,14 +118,17 @@ public class PluginConfigTest {
 
     private void assertForPackageConfigurationErrors(PackageConfigurations packageConfigurations, List<ValidationError> expectedErrors, boolean expectedValidationResult) {
         Errors errors = new Errors();
-        boolean result = pluginConfig.isPackageConfigurationValid(packageConfigurations, new PackageConfigurations(), errors);
+        final PackageConfigurations repoConfig = new PackageConfigurations();
+        repoConfig.add(new PackageConfiguration(REPO_URL, "http://nuget.org/v2"));
+        boolean result = pluginConfig.isPackageConfigurationValid(packageConfigurations, repoConfig, errors);
         assertThat(result, is(expectedValidationResult));
         assertThat(errors.getErrors().size(), is(expectedErrors.size()));
         assertThat(errors.getErrors().containsAll(expectedErrors), is(true));
     }
 
     private PackageConfigurations configurations(String key, String value) {
-        PackageConfigurations configurations = new PackageConfigurations();
+        PackageConfigurations packageConfigurations = new PackageConfigurations();
+        PackageConfigurations configurations = packageConfigurations;
         configurations.add(new PackageConfiguration(key, value));
         return configurations;
     }

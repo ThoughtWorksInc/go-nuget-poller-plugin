@@ -46,7 +46,7 @@ public class NuGetTest {
         NuGetCmdOutput nuGetCmdOutput = mock(NuGetCmdOutput.class);
         when(processRunner.execute(expectedCommand, true)).thenReturn(nuGetCmdOutput);
         RepoUrl repoUrl = RepoUrl.create(repourlStr, null, null);
-        NuGetParams params = new NuGetParams(repoUrl, packageId, null, null, null, true);
+        NuGetParams params = new NuGetParams(repoUrl, packageId, null, null, null, false);
         when(nuGetCmdOutput.isSuccess()).thenReturn(true);
         new NuGet(processRunner, params).poll();
 

@@ -44,4 +44,8 @@ public class NuGetPackageConfig {
         if(config.getValue() == null) return true;
         return !config.getValue().equalsIgnoreCase("no");
     }
+
+    public boolean hasBounds() {
+        return getPollVersionFrom() != null || getPollVersionTo() != null;
+    }
 }

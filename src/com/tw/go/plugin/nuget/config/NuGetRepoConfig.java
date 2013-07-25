@@ -26,6 +26,12 @@ public class NuGetRepoConfig {
                 stringValueOf(repoConfigs.get(USERNAME)),
                 stringValueOf(repoConfigs.get(PASSWORD)));
     }
+    public boolean isHttp() {
+        return RepoUrl.create(
+                repoUrlConfig.getValue(),
+                stringValueOf(repoConfigs.get(USERNAME)),
+                stringValueOf(repoConfigs.get(PASSWORD))).isHttp();
+    }
 
     public boolean isRepoUrlMissing() {
         return repoUrlConfig == null;

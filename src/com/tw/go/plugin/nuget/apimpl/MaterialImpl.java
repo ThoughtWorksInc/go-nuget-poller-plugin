@@ -4,13 +4,13 @@ import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRepositoryMaterial;
 
 @Extension
-public class NuGetMaterial implements PackageRepositoryMaterial {
+public class MaterialImpl implements PackageRepositoryMaterial {
 
     public PluginConfig getConfig() {
         return new PluginConfig();
     }
 
-    public NuGetPoller getPoller() {
-        return new NuGetPoller();
+    public PollerImpl getPoller() {
+        return new PollerImpl();
     }
 }

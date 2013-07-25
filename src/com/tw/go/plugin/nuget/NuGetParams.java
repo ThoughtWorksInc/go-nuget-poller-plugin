@@ -6,19 +6,19 @@ import com.tw.go.plugin.nuget.config.RepoUrl;
 import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSIONONLY;
 
 public class NuGetParams {
-    public static final String LATEST = "LATEST";
+    public static final String ANY = "ANY";
     private final String packageId;
     private final RepoUrl repoUrl;
-    private String pollVersionFrom = LATEST;
-    private String pollVersionTo = LATEST;
+    private String pollVersionFrom = ANY;
+    private String pollVersionTo = ANY;
     private PackageRevision lastKnownVersion = null;
     private boolean includePreRelease = true;//TODO: surface this option
 
     public NuGetParams(RepoUrl repoUrl, String packageId, String pollVersionFrom, String pollVersionTo, PackageRevision previouslyKnownRevision, boolean includePreReleaseVersions) {
         this.repoUrl = repoUrl;
         this.packageId = packageId;
-        if (pollVersionFrom != null) this.pollVersionFrom = pollVersionFrom;
-        if (pollVersionTo != null) this.pollVersionTo = pollVersionTo;
+        if (pollVersionFrom != null && !pollVersionFrom.trim().isEmpty()) this.pollVersionFrom = pollVersionFrom;
+        if (pollVersionTo != null && !pollVersionTo.trim().isEmpty()) this.pollVersionTo = pollVersionTo;
         this.lastKnownVersion = previouslyKnownRevision;
         this.includePreRelease = includePreReleaseVersions;
     }
@@ -63,15 +63,22 @@ public class NuGetParams {
     }
 
     public boolean lowerBoundGiven() {
-        return !LATEST.equals(pollVersionFrom);
+        return !ANY.equals(pollVersionFrom);
     }
 
     public boolean upperBoundGiven() {
-        return !LATEST.equals(pollVersionTo);
+        return !ANY.equals(pollVersionTo);
     }
 
     public String getPackageAndVersion() {
-        return String.format("%s, v%s to v%s", packageId, pollVersionFrom, pollVersionTo);
+        if(eitherBoundGiven())
+        return String.format("%s, %s to %s", packageId, displayVersion(pollVersionFrom), displayVersion(pollVersionTo));
+        return packageId;
+    }
+
+    private String displayVersion(String version) {
+        if(ANY.equals(version)) return ANY;
+        return "V" + version;
     }
 
     public String getQuery() {
@@ -126,7 +133,11 @@ public class NuGetParams {
         return result;
     }
 
-    public boolean notPollingForLatest() {
+    public boolean eitherBoundGiven() {
         return upperBoundGiven() || lowerBoundGiven();
+    }
+
+    public boolean shoudIncludePreRelease() {
+        return includePreRelease;
     }
 }

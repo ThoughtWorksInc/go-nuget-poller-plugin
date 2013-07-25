@@ -11,8 +11,8 @@ import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 
-public class NuGetPoller implements PackageRepositoryPoller {
-    private static Logger LOGGER = Logger.getLoggerFor(NuGetPoller.class);
+public class PollerImpl implements PackageRepositoryPoller {
+    private static Logger LOGGER = Logger.getLoggerFor(PollerImpl.class);
 
     public PackageRevision getLatestRevision(PackageConfigurations packageConfig, PackageConfigurations repoConfig) {
         LOGGER.info(String.format("getLatestRevision called with packageId %s, for repo: %s",

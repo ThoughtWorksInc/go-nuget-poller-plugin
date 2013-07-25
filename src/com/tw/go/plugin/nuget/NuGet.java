@@ -34,10 +34,9 @@ public class NuGet {
     }
 
     private PackageRevision nugetexe(RuntimeException apiError) {
-        if(params.notPollingForLatest())
+        if(params.eitherBoundGiven())
             throw new RuntimeException(String.format("Polling with version constraints (%s) not supported via nuget.exe", params.getPackageAndVersion()));
-        String[] command = {"nuget", "list", params.getPrefixedPackageId(),
-                "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
+        String[] command = getCommand();
         NuGetCmdOutput nuGetCmdOutput;
         synchronized (params.getRepoId().intern()) {
             nuGetCmdOutput = processRunner.execute(command, params.isHttp());
@@ -48,6 +47,14 @@ public class NuGet {
         }
         LOGGER.info(nuGetCmdOutput.getErrorDetail());
         throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary(), apiError));
+    }
+
+    private String[] getCommand() {
+        if(params.shoudIncludePreRelease())
+        return new String[]{"nuget", "list", params.getPrefixedPackageId(),
+                "-Verbosity", "detailed", "-Prerelease","-Source", params.getRepoUrlStr()};
+        return new String[]{"nuget", "list", params.getPrefixedPackageId(),
+                    "-Verbosity", "detailed", "-Source", params.getRepoUrlStr()};
     }
 
     private PackageRevision pollByAPI() {
