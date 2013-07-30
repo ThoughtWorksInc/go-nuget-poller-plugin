@@ -4,7 +4,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.tw.go.plugin.nuget.config.RepoUrl;
 import org.junit.Test;
 
-import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSIONONLY;
+import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSION;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -33,7 +33,7 @@ public class NuGetParamsTest {
     @Test
     public void shouldHandleUpperBoundDuringUpdate(){
         PackageRevision known = new PackageRevision("1.1.2",null,"abc");
-        known.addData(PACKAGE_VERSIONONLY, "1.1.2");
+        known.addData(PACKAGE_VERSION, "1.1.2");
 //        PackageRevision result = new NuGet(new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null), "RouteMagic", null, "1.4", known)).poll();
 //        assertThat(result.getDataFor(PACKAGE_LOCATION), is("file://d:/tmp/nuget-local-repo/RouteMagic.1.2.nupkg"));
         NuGetParams params = new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null),
@@ -44,7 +44,7 @@ public class NuGetParamsTest {
     @Test
     public void shouldIgnoreLowerBoundDuringUpdate(){
         PackageRevision known = new PackageRevision("1.1.2",null,"abc");
-        known.addData(PACKAGE_VERSIONONLY,"1.1.2");
+        known.addData(PACKAGE_VERSION,"1.1.2");
         NuGetParams params = new NuGetParams(RepoUrl.create("http://www.nuget.org/api/v2", null, null),
                 "RouteMagic", "1.0", null, known, true);
         assertThat(params.getQuery(),

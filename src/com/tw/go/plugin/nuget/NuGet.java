@@ -35,7 +35,10 @@ public class NuGet {
 
     private PackageRevision nugetexe(RuntimeException apiError) {
         if(params.eitherBoundGiven())
-            throw new RuntimeException(String.format("Polling with version constraints (%s) not supported via nuget.exe", params.getPackageAndVersion()));
+            throw new RuntimeException(
+                    getErrorMessage(
+                            apiError,
+                            String.format("Polling with version constraints (%s) not supported via nuget.exe", params.getPackageAndVersion())));
         String[] command = getCommand();
         NuGetCmdOutput nuGetCmdOutput;
         synchronized (params.getRepoId().intern()) {
@@ -46,7 +49,10 @@ public class NuGet {
             return nuGetCmdOutput.getPackageRevision(params.getRepoUrl());
         }
         LOGGER.info(nuGetCmdOutput.getErrorDetail());
-        throw new RuntimeException(getErrorMessage(nuGetCmdOutput.getErrorSummary(), apiError));
+        throw new RuntimeException(
+                getErrorMessage(apiError,
+                        String.format("nuget.exe: Error while querying repository with path '%s' and packageId '%s'. %s",
+                params.getRepoUrlStr(), params.getPackageId(), nuGetCmdOutput.getErrorSummary())));
     }
 
     private String[] getCommand() {
@@ -63,14 +69,13 @@ public class NuGet {
         return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());
     }
 
-    private String getErrorMessage(String message, RuntimeException apiError) {
+    private String getErrorMessage(RuntimeException apiError, String msg) {
         StringBuilder sb = new StringBuilder();
         if(apiError != null){
             sb.append("Falling back to nuget.exe after API error: ").
                     append(apiError.getClass().getSimpleName()).append(": ").append(apiError.getMessage()).append("\n");
         }
-        sb.append(format("nuget.exe: Error while querying repository with path '%s' and packageId '%s'. %s",
-                params.getRepoUrlStr(), params.getPackageId(), message));
+        sb.append(msg);
         return sb.toString();
     }
 

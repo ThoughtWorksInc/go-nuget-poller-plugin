@@ -12,7 +12,7 @@ import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 import java.util.Arrays;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.*;
-import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.PACKAGE_ID;
+import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.*;
 import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -20,19 +20,19 @@ public class PluginConfig implements PackageRepositoryConfiguration {
 
     private static Logger LOGGER = Logger.getLoggerFor(PluginConfig.class);
     public static final PackageConfiguration REPO_CONFIG_REPO_URL =
-            new PackageConfiguration(REPO_URL).with(DISPLAY_NAME, "Package Source").with(DISPLAY_ORDER, 0);
+            new PackageConfiguration(REPO_URL).with(DISPLAY_NAME, "Package Source or Feed Server URL").with(DISPLAY_ORDER, 0);
     public static final PackageConfiguration REPO_CONFIG_USERNAME =
-            new PackageConfiguration(USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1);
+            new PackageConfiguration(USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
     public static final PackageConfiguration REPO_CONFIG_PASSWORD =
-            new PackageConfiguration(PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2);
+            new PackageConfiguration(PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
     public static final PackageConfiguration PKG_CONFIG_PACKAGE_ID =
             new PackageConfiguration(PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
     public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_FROM =
-            new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1);
+            new PackageConfiguration(POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
     public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_TO =
-            new PackageConfiguration(NuGetPackageConfig.POLL_VERSION_TO).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2);
+            new PackageConfiguration(POLL_VERSION_TO).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
     public static final PackageConfiguration PKG_CONFIG_INCLUDE_PRE_RELEASE =
-            new PackageConfiguration(NuGetPackageConfig.INCLUDE_PRE_RELEASE).with(REQUIRED, false).with(DISPLAY_NAME, "Include Prerelease? (yes/no, defaults to yes)").with(DISPLAY_ORDER, 3);
+            new PackageConfiguration(INCLUDE_PRE_RELEASE).with(REQUIRED, false).with(DISPLAY_NAME, "Include Prerelease? (yes/no, defaults to yes)").with(DISPLAY_ORDER, 3);
 
     public PackageConfigurations getRepositoryConfiguration() {
         PackageConfigurations configurations = new PackageConfigurations();

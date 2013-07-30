@@ -8,7 +8,7 @@ public class NuGetPackage {
     public static final String PACKAGE_DESCRIPTION = "DESCRIPTION";
     public static final String PACKAGE_LOCATION = "LOCATION";
     //TODO:change this to version once version renamed to label
-    public static final String PACKAGE_VERSIONONLY = "VERSIONONLY";
+    public static final String PACKAGE_VERSION = "VERSION";
 
     public String getPackageName() {
         return pkgName;
@@ -54,7 +54,7 @@ public class NuGetPackage {
         PackageRevision result = new PackageRevision(packageLabel, publishedDate, author);
         result.addData(PACKAGE_LOCATION, packageLocation);
         result.addData(PACKAGE_DESCRIPTION, pkgDescription);
-        if(packageVersion != null) result.addData(NuGetPackage.PACKAGE_VERSIONONLY, packageVersion);
+        if(packageVersion != null) result.addData(NuGetPackage.PACKAGE_VERSION, packageVersion);
         return result;
     }
 

@@ -39,7 +39,7 @@ public class PluginConfigTest {
         assertThat(configurations.get(REPO_URL), is(notNullValue()));
         assertThat(configurations.get(REPO_URL).getOption(PackageConfiguration.SECURE), is(false));
         assertThat(configurations.get(REPO_URL).getOption(PackageConfiguration.REQUIRED), is(true));
-        assertThat(configurations.get(REPO_URL).getOption(DISPLAY_NAME), is("Package Source"));
+        assertThat(configurations.get(REPO_URL).getOption(DISPLAY_NAME), is("Package Source or Feed Server URL"));
         assertThat(configurations.get(REPO_URL).getOption(DISPLAY_ORDER), is(0));
         assertThat(configurations.get(USERNAME), is(notNullValue()));
         assertThat(configurations.get(USERNAME).getOption(PackageConfiguration.SECURE), is(false));

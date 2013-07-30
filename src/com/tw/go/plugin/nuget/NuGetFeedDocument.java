@@ -63,7 +63,7 @@ public class NuGetFeedDocument {
         PackageRevision result = new PackageRevision(getPackageLabel(), getPublishedDate(), getAuthor());
         result.addData(NuGetPackage.PACKAGE_LOCATION, getPackageLocation());
         result.addData(NuGetPackage.PACKAGE_DESCRIPTION, getDescriptionSummary());
-        result.addData(NuGetPackage.PACKAGE_VERSIONONLY, getPackageVersion());
+        result.addData(NuGetPackage.PACKAGE_VERSION, getPackageVersion());
         return result;
     }
 

@@ -3,7 +3,7 @@ package com.tw.go.plugin.nuget;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.tw.go.plugin.nuget.config.RepoUrl;
 
-import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSIONONLY;
+import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSION;
 
 public class NuGetParams {
     public static final String ANY = "ANY";
@@ -59,7 +59,7 @@ public class NuGetParams {
 
     public String getLastKnownVersion() {
         if (lastKnownVersion == null) return null;
-        return lastKnownVersion.getDataFor(PACKAGE_VERSIONONLY);
+        return lastKnownVersion.getDataFor(PACKAGE_VERSION);
     }
 
     public boolean lowerBoundGiven() {
