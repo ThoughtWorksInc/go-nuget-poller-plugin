@@ -23,7 +23,7 @@ public class NuGetFeedDocumentTest {
         factory.setNamespaceAware(true);
         DocumentBuilder builder;
         builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(new File("test\\nuget-multiple-entries.xml"));
+        Document doc = builder.parse(new File("test\\fast\\nuget-multiple-entries.xml"));
         try {
             new NuGetPackage("pkgName", "1.0").getPackageRevision(new NuGetFeedDocument(doc));
             fail("Should have thrown excption for multiple entries");
@@ -38,7 +38,7 @@ public class NuGetFeedDocumentTest {
         factory.setNamespaceAware(true);
         DocumentBuilder builder;
         builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(new File("test\\nuget-good-feed.xml"));
+        Document doc = builder.parse(new File("test\\fast\\nuget-good-feed.xml"));
         PackageRevision result = new NuGetPackage("7-Zip.CommandLine","9.20.0").getPackageRevision(new NuGetFeedDocument(doc));
         assertThat(result.getUser(), is("Igor Pavlov"));
         assertThat(result.getRevision(), is("7-Zip.CommandLine-9.20.0"));
