@@ -1,9 +1,6 @@
-<project name="go-nuget-poller" default="all">
+<project name="go-nuget-poller" default="all" basedir=".">
 
-    <property name="cruise.dir" value="/home/vagrant/cruise"/>
-    <property name="cruise.go.api.dir" value="/vagrant/go-nuget-poller/sdk"/>
-    <property name="go.api.jar.name" value="go-plugin-api-13.3.0.jar"/>
-    <property name="cruise.go.api.jar" value="${cruise.go.api.dir}/${go.api.jar.name}"/>
+    <property name="go.api.jar" value="sdk/go-plugin-api-13.3.0.jar"/>
     <property name="target.dir" value="target"/>
     <property name="dist.dir" value="dist"/>
     <property name="test.reports.dir" value="reports"/>
@@ -20,7 +17,7 @@
         <fileset dir="lib">
             <include name="**/*.jar"/>
         </fileset>
-        <pathelement location="${cruise.go.api.jar}"/>
+        <pathelement location="${go.api.jar}"/>
     </path>
 
     <target name="all" depends="clean, compile.source, compile.test, test, dist"/>
