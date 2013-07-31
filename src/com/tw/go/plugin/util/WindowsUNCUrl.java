@@ -1,4 +1,4 @@
-package com.tw.go.plugin.nuget.config;
+package com.tw.go.plugin.util;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 

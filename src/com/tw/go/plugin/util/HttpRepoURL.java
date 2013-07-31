@@ -1,8 +1,7 @@
-package com.tw.go.plugin.nuget.config;
+package com.tw.go.plugin.util;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
-import com.tw.go.plugin.util.StringUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
@@ -35,15 +34,15 @@ public class HttpRepoURL extends RepoUrl {
             doBasicValidations(errors);
             URL validatedUrl = new URL(this.url);
             if (!(validatedUrl.getProtocol().startsWith("http"))) {
-                errors.addError(new ValidationError(NuGetRepoConfig.REPO_URL, "Invalid URL: Only http is supported."));
+                errors.addError(new ValidationError(REPO_URL, "Invalid URL: Only http is supported."));
             }
 
             if (StringUtil.isNotBlank(validatedUrl.getUserInfo())) {
-                errors.addError(new ValidationError(NuGetRepoConfig.REPO_URL, "User info should not be provided as part of the URL. Please provide credentials using USERNAME and PASSWORD configuration keys."));
+                errors.addError(new ValidationError(REPO_URL, "User info should not be provided as part of the URL. Please provide credentials using USERNAME and PASSWORD configuration keys."));
             }
             credentials.validate(errors);
         } catch (MalformedURLException e) {
-            errors.addError(new ValidationError(NuGetRepoConfig.REPO_URL, "Invalid URL : " + url));
+            errors.addError(new ValidationError(REPO_URL, "Invalid URL : " + url));
         }
     }
 

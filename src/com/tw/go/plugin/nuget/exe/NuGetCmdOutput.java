@@ -6,7 +6,7 @@ import com.tw.go.plugin.nuget.Feed;
 import com.tw.go.plugin.nuget.NuGetFeedDocument;
 import com.tw.go.plugin.nuget.NuGetPackage;
 import com.tw.go.plugin.nuget.NuGetParams;
-import com.tw.go.plugin.nuget.config.RepoUrl;
+import com.tw.go.plugin.util.RepoUrl;
 import com.tw.go.plugin.util.ListUtil;
 
 import java.util.ArrayList;

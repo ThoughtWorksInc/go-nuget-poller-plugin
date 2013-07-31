@@ -1,6 +1,6 @@
 package com.tw.go.plugin.nuget;
 
-import com.tw.go.plugin.nuget.config.HttpRepoURL;
+import com.tw.go.plugin.util.HttpRepoURL;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;

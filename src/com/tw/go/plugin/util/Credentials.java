@@ -1,8 +1,7 @@
-package com.tw.go.plugin.nuget.config;
+package com.tw.go.plugin.util;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
-import com.tw.go.plugin.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -31,9 +30,9 @@ public class Credentials {
 
     public void validate(Errors errors) {
         if (StringUtil.isBlank(user) && StringUtil.isNotBlank(password))
-            errors.addError(new ValidationError(NuGetRepoConfig.USERNAME, "Both Username and password are required."));
+            errors.addError(new ValidationError(RepoUrl.USERNAME, "Both Username and password are required."));
         if (StringUtil.isNotBlank(user) && StringUtil.isBlank(password))
-            errors.addError(new ValidationError(NuGetRepoConfig.PASSWORD, "Both Username and password are required."));
+            errors.addError(new ValidationError(RepoUrl.PASSWORD, "Both Username and password are required."));
     }
 
     public boolean provided() {

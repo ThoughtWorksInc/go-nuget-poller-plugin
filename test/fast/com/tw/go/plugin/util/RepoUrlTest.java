@@ -1,14 +1,13 @@
-package com.tw.go.plugin.nuget.config;
+package com.tw.go.plugin.util;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.REPO_URL;
+import static com.tw.go.plugin.util.RepoUrl.REPO_URL;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -56,17 +55,6 @@ public class RepoUrlTest {
             fail("should have failed");
         } catch (Exception e) {
             assertThat(e.getMessage(), is(InvalidRepoUrl.MESSAGE));
-        }
-    }
-
-    @Test
-    @Ignore
-    public void shouldFailCheckConnectionToTheRepoWhenHttpUrlIsNotReachable() {
-        try {
-            RepoUrl.create("http://sifystdgobgr101.thoughtworks.com:8080/tfs/", null, null).checkConnection();
-            fail("should fail");
-        } catch (Exception e) {
-            assertThat(e.getMessage(), is("HTTP/1.1 401 Unauthorized"));
         }
     }
 

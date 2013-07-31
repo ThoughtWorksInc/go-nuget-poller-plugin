@@ -1,5 +1,6 @@
-package com.tw.go.plugin.nuget.config;
+package com.tw.go.plugin.util;
 
+import com.tw.go.plugin.util.RepoUrl;
 import org.junit.Test;
 
 import java.net.UnknownHostException;

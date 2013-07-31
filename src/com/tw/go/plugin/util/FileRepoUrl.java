@@ -1,8 +1,7 @@
-package com.tw.go.plugin.nuget.config;
+package com.tw.go.plugin.util;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
-import com.tw.go.plugin.util.StringUtil;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -23,10 +22,10 @@ public class FileRepoUrl extends RepoUrl {
             doBasicValidations(errors);
             URL validatedUrl = new URL(this.url);
             if (StringUtil.isNotBlank(validatedUrl.getUserInfo())) {
-                errors.addError(new ValidationError(NuGetRepoConfig.REPO_URL, "User info invalid for file URL"));
+                errors.addError(new ValidationError(REPO_URL, "User info invalid for file URL"));
             }
         } catch (MalformedURLException e) {
-            errors.addError(new ValidationError(NuGetRepoConfig.REPO_URL, "Invalid URL : " + url));
+            errors.addError(new ValidationError(REPO_URL, "Invalid URL : " + url));
         }
     }
 

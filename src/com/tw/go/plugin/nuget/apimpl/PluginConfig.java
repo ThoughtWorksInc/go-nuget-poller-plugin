@@ -8,23 +8,23 @@ import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
+import com.tw.go.plugin.util.RepoUrl;
 
 import java.util.Arrays;
 
 import static com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration.*;
 import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.*;
-import static com.tw.go.plugin.nuget.config.NuGetRepoConfig.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class PluginConfig implements PackageRepositoryConfiguration {
 
     private static Logger LOGGER = Logger.getLoggerFor(PluginConfig.class);
     public static final PackageConfiguration REPO_CONFIG_REPO_URL =
-            new PackageConfiguration(REPO_URL).with(DISPLAY_NAME, "Package Source or Feed Server URL").with(DISPLAY_ORDER, 0);
+            new PackageConfiguration(RepoUrl.REPO_URL).with(DISPLAY_NAME, "Package Source or Feed Server URL").with(DISPLAY_ORDER, 0);
     public static final PackageConfiguration REPO_CONFIG_USERNAME =
-            new PackageConfiguration(USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
+            new PackageConfiguration(RepoUrl.USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
     public static final PackageConfiguration REPO_CONFIG_PASSWORD =
-            new PackageConfiguration(PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
+            new PackageConfiguration(RepoUrl.PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
     public static final PackageConfiguration PKG_CONFIG_PACKAGE_ID =
             new PackageConfiguration(PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
     public static final PackageConfiguration PKG_CONFIG_POLL_VERSION_FROM =
@@ -56,7 +56,7 @@ public class PluginConfig implements PackageRepositoryConfiguration {
         if (nuGetRepoConfig.isRepoUrlMissing()) {
             String message = "Repository url not specified";
             LOGGER.error(message);
-            errors.addError(new ValidationError(REPO_URL, message));
+            errors.addError(new ValidationError(RepoUrl.REPO_URL, message));
             return false;
         }
         nuGetRepoConfig.getRepoUrl().validate(errors);

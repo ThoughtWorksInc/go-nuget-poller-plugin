@@ -1,7 +1,7 @@
 package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
-import com.tw.go.plugin.nuget.config.RepoUrl;
+import com.tw.go.plugin.util.RepoUrl;
 import com.tw.go.plugin.nuget.exe.NuGetCmdOutput;
 import com.tw.go.plugin.nuget.exe.ProcessRunner;
 import com.tw.go.plugin.util.StringUtil;

@@ -1,4 +1,4 @@
-package com.tw.go.plugin.nuget.config;
+package com.tw.go.plugin.util;
 
 import com.thoughtworks.go.plugin.api.validation.Errors;
 import com.thoughtworks.go.plugin.api.validation.ValidationError;
@@ -15,7 +15,7 @@ public class InvalidRepoUrl extends RepoUrl {
     public void validate(Errors errors) {
         doBasicValidations(errors);
         if(!errors.hasErrors())
-        errors.addError(new ValidationError(NuGetRepoConfig.REPO_URL, MESSAGE));
+        errors.addError(new ValidationError(REPO_URL, MESSAGE));
     }
 
     @Override

@@ -10,13 +10,14 @@ import com.tw.go.plugin.nuget.NuGet;
 import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
+import com.tw.go.plugin.util.RepoUrl;
 
 public class PollerImpl implements PackageRepositoryPoller {
     private static Logger LOGGER = Logger.getLoggerFor(PollerImpl.class);
 
     public PackageRevision getLatestRevision(PackageConfigurations packageConfig, PackageConfigurations repoConfig) {
         LOGGER.info(String.format("getLatestRevision called with packageId %s, for repo: %s",
-                packageConfig.get(NuGetPackageConfig.PACKAGE_ID).getValue(), repoConfig.get(NuGetRepoConfig.REPO_URL).getValue()));
+                packageConfig.get(NuGetPackageConfig.PACKAGE_ID).getValue(), repoConfig.get(RepoUrl.REPO_URL).getValue()));
         validateConfig(repoConfig, packageConfig);
         NuGetPackageConfig nuGetPackageConfig = new NuGetPackageConfig(packageConfig);
         NuGetParams params = new NuGetParams(
@@ -32,7 +33,7 @@ public class PollerImpl implements PackageRepositoryPoller {
 
     public PackageRevision latestModificationSince(PackageConfigurations packageConfig, PackageConfigurations repoConfig, PackageRevision previouslyKnownRevision) {
         LOGGER.info(String.format("latestModificationSince called with packageId %s, for repo: %s",
-                packageConfig.get(NuGetPackageConfig.PACKAGE_ID).getValue(), repoConfig.get(NuGetRepoConfig.REPO_URL).getValue()));
+                packageConfig.get(NuGetPackageConfig.PACKAGE_ID).getValue(), repoConfig.get(RepoUrl.REPO_URL).getValue()));
         validateConfig(repoConfig, packageConfig);
         NuGetPackageConfig nuGetPackageConfig = new NuGetPackageConfig(packageConfig);
         NuGetParams params = new NuGetParams(

@@ -59,7 +59,7 @@
             </classpath>
             <formatter type="plain"/>
             <batchtest fork="yes" todir="${test.reports.dir}">
-                <fileset dir="test">
+                <fileset dir="test/fast">
                     <include name="**/*Test*.java"/>
                 </fileset>
             </batchtest>

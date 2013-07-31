@@ -3,7 +3,7 @@ package com.tw.go.plugin.nuget.exe;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.tw.go.plugin.nuget.NuGetPackage;
 import com.tw.go.plugin.nuget.NuGetParams;
-import com.tw.go.plugin.nuget.config.RepoUrl;
+import com.tw.go.plugin.util.RepoUrl;
 import org.junit.Test;
 
 import java.util.ArrayList;
