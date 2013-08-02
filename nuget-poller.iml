@@ -11,9 +11,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="lib" level="project" />
-    <orderEntry type="library" exported="" name="go-plugin-api" level="project" />
     <orderEntry type="library" name="go-plugin-api-13.3.0" level="project" />
+    <orderEntry type="library" name="go-plugin-util" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>
 

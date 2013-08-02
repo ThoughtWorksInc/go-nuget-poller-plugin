@@ -4,3 +4,4 @@ target/*
 *.iws
 go-plugin-api*.jar
 reports/*
+lib/*

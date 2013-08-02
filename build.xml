@@ -1,24 +1,21 @@
-<project name="go-nuget-poller" default="all" basedir=".">
+<project name="go-nuget-poller" default="all" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <property name="go.api.jar" value="sdk/go-plugin-api-13.3.0.jar"/>
+    <property name="go.plugin.api" value="sdk/go-plugin-api-13.3.0.jar"/>
+    <property name="go.plugin.util" value="sdk/go-plugin-util.jar"/>
     <property name="target.dir" value="target"/>
     <property name="dist.dir" value="dist"/>
     <property name="test.reports.dir" value="reports"/>
-
-    <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-        <classpath>
-            <path id="junit.test">
-                <fileset dir="." includes="tools/apache-ant-1.9.0/ant-junit.jar, lib/junit*.jar"/>
-            </path>
-        </classpath>
-    </taskdef>
 
     <path id="compile.classpath">
         <fileset dir="lib">
             <include name="**/*.jar"/>
         </fileset>
-        <pathelement location="${go.api.jar}"/>
+        <pathelement location="${go.plugin.api}"/>
+        <pathelement location="${go.plugin.util}"/>
     </path>
+    <target name="resolve">
+        <ivy:retrieve />
+    </target>
 
     <target name="all" depends="clean, compile.source, compile.test, test, dist"/>
 
@@ -36,7 +33,7 @@
         <mkdir dir="${test.reports.dir}"/>
     </target>
 
-    <target name="compile.source" depends="prepare">
+    <target name="compile.source" depends="prepare, resolve">
         <javac srcdir="src" destdir="${target.dir}/src" classpathref="compile.classpath" includeantruntime="false" source="1.6"/>
     </target>
 
@@ -72,6 +69,7 @@
                 <exclude name="mockito*.jar"/>
                 <include name="*.jar"/>
             </fileset>
+            <file file="sdk/go-plugin-util.jar"/>
         </copy>
         <basename property="jar.name" file="${basedir}"/>
         <copy file="plugin.xml" todir="${target.dir}/src"/>

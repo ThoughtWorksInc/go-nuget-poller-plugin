@@ -2,11 +2,11 @@ package com.tw.go.plugin.nuget.exe;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.junit.internal.matchers.StringContains.containsString;
 
 public class ProcessRunnerTest {
 
