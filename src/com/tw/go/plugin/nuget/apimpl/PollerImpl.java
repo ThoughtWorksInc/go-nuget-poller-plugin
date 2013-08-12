@@ -4,8 +4,9 @@ import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigurations;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRepositoryPoller;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
-import com.thoughtworks.go.plugin.api.validation.Errors;
-import com.thoughtworks.go.plugin.api.validation.ValidationError;
+import com.thoughtworks.go.plugin.api.response.OperationResponse;
+import com.thoughtworks.go.plugin.api.response.validation.Errors;
+import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
 import com.tw.go.plugin.nuget.NuGet;
 import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
@@ -53,6 +54,11 @@ public class PollerImpl implements PackageRepositoryPoller {
             LOGGER.warn(String.format("Updated Package %s published earlier (%s) than previous (%s, %s)",
                     updatedPackage.getRevision(), updatedPackage.getTimestamp(), previouslyKnownRevision.getRevision(), previouslyKnownRevision.getTimestamp()));
         return updatedPackage;
+    }
+
+    @Override
+    public OperationResponse canConnectToRepository(PackageConfigurations packageConfigurations) {
+        throw new UnsupportedOperationException("not implemented yet");
     }
 
     private void validateConfig(PackageConfigurations repoConfig, PackageConfigurations packageConfig) {

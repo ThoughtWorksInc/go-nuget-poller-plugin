@@ -2,8 +2,8 @@ package com.tw.go.plugin.nuget.apimpl;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigurations;
-import com.thoughtworks.go.plugin.api.validation.Errors;
-import com.thoughtworks.go.plugin.api.validation.ValidationError;
+import com.thoughtworks.go.plugin.api.response.validation.Errors;
+import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
 import com.tw.go.plugin.util.InvalidRepoUrl;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
