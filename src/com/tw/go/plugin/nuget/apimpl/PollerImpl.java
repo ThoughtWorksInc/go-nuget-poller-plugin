@@ -11,6 +11,7 @@ import com.tw.go.plugin.nuget.NuGet;
 import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
+import com.tw.go.plugin.util.HttpRepoURL;
 import com.tw.go.plugin.util.RepoUrl;
 
 public class PollerImpl implements PackageRepositoryPoller {
@@ -57,8 +58,28 @@ public class PollerImpl implements PackageRepositoryPoller {
     }
 
     @Override
-    public OperationResponse canConnectToRepository(PackageConfigurations packageConfigurations) {
-        throw new UnsupportedOperationException("not implemented yet");
+    public OperationResponse checkConnectionToRepository(PackageConfigurations repoConfigs) {
+        OperationResponse response = new OperationResponse();
+        NuGetRepoConfig nuGetRepoConfig = new NuGetRepoConfig(repoConfigs);
+        RepoUrl repoUrl = nuGetRepoConfig.getRepoUrl();
+        if(repoUrl.isHttp()){
+        try {
+            repoUrl.checkConnection(((HttpRepoURL)repoUrl).getUrlStrWithTrailingSlash()+"$metadata");
+        } catch (Exception e) {
+            response.withErrorMessages(e.getMessage());
+        }                    }else{
+            repoUrl.checkConnection();
+        }
+        return response;
+    }
+
+    @Override
+    public OperationResponse checkConnectionToPackage(PackageConfigurations packageConfigs, PackageConfigurations repoConfigs) {
+        OperationResponse response = checkConnectionToRepository(repoConfigs);
+        if(! response.isSuccessful()) return response;
+        PackageRevision packageRevision = getLatestRevision(packageConfigs, repoConfigs);
+        response.withSuccessMessages("Found "+packageRevision.getRevision());
+        return response;
     }
 
     private void validateConfig(PackageConfigurations repoConfig, PackageConfigurations packageConfig) {

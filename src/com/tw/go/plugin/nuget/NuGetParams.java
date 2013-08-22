@@ -1,6 +1,7 @@
 package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.tw.go.plugin.util.HttpRepoURL;
 import com.tw.go.plugin.util.RepoUrl;
 
 import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSION;
@@ -37,7 +38,7 @@ public class NuGetParams {
     }
 
     public String getRepoUrlStr() {
-        return repoUrl.forDisplay();
+        return repoUrl.getUrlStr();
     }
 
     public RepoUrl getRepoUrl() {
@@ -46,11 +47,6 @@ public class NuGetParams {
 
     public boolean isHttp() {
         return repoUrl.isHttp();
-    }
-
-    public String getRepoUrlStrWithTrailingSlash() {
-        if (repoUrl.forDisplay().endsWith("/")) return repoUrl.forDisplay();
-        return repoUrl.forDisplay() + "/";
     }
 
     public boolean isLastVersionKnown() {
@@ -83,7 +79,7 @@ public class NuGetParams {
 
     public String getQuery() {
         StringBuilder query = new StringBuilder();
-        query.append(getRepoUrlStrWithTrailingSlash());
+        query.append(((HttpRepoURL)repoUrl).getUrlStrWithTrailingSlash());
         query.append("GetUpdates()?");
         query.append(String.format("packageIds='%s'", getPackageId()));
         query.append(String.format("&versions='%s'", getEffectiveLowerBound()));

@@ -145,7 +145,7 @@ public class NuGetCmdOutput {
     public PackageRevision getPackageRevision(RepoUrl repoUrl) {
         if (http) return nugetPkg.getPackageRevision(getFeedDocument());
         String separator = repoUrl.getSeparator();
-        return nugetPkg.createPackageRevision(MIN_DATE, nugetPkg.getPackageLabel(), "unknown", repoUrl.forDisplay() + separator + nugetPkg.getFilename(), nugetPkg.getPackageVersion());
+        return nugetPkg.createPackageRevision(MIN_DATE, nugetPkg.getPackageLabel(), "unknown", repoUrl.getUrlStr() + separator + nugetPkg.getFilename(), nugetPkg.getPackageVersion());
     }
 
     private NuGetFeedDocument getFeedDocument() {
