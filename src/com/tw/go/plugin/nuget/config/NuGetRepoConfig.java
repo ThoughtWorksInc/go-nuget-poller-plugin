@@ -1,21 +1,22 @@
 package com.tw.go.plugin.nuget.config;
 
+import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
-import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigurations;
+import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.tw.go.plugin.util.RepoUrl;
 
 public class NuGetRepoConfig {
-    private final PackageConfigurations repoConfigs;
-    private final PackageConfiguration repoUrlConfig;
+    private final RepositoryConfiguration repoConfigs;
+    private final Property repoUrlConfig;
 
-    public NuGetRepoConfig(PackageConfigurations repoConfigs) {
+    public NuGetRepoConfig(RepositoryConfiguration repoConfigs) {
         this.repoConfigs = repoConfigs;
         repoUrlConfig = repoConfigs.get(RepoUrl.REPO_URL);
     }
 
-    public String stringValueOf(PackageConfiguration packageConfiguration) {
-        if (packageConfiguration == null) return null;
-        return packageConfiguration.getValue();
+    public String stringValueOf(Property property) {
+        if (property == null) return null;
+        return property.getValue();
     }
 
     public RepoUrl getRepoUrl() {

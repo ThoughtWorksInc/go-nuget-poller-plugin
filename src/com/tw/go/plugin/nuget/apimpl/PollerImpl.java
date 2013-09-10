@@ -1,11 +1,13 @@
 package com.tw.go.plugin.nuget.apimpl;
 
 import com.thoughtworks.go.plugin.api.logging.Logger;
-import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigurations;
-import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRepositoryPoller;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialPoller;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
-import com.thoughtworks.go.plugin.api.response.OperationResponse;
-import com.thoughtworks.go.plugin.api.response.validation.Errors;
+import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
+import com.thoughtworks.go.plugin.api.response.Result;
+import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
+import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
 import com.tw.go.plugin.nuget.NuGet;
 import com.tw.go.plugin.nuget.NuGetParams;
@@ -14,10 +16,10 @@ import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 import com.tw.go.plugin.util.HttpRepoURL;
 import com.tw.go.plugin.util.RepoUrl;
 
-public class PollerImpl implements PackageRepositoryPoller {
+public class PollerImpl implements PackageMaterialPoller {
     private static Logger LOGGER = Logger.getLoggerFor(PollerImpl.class);
 
-    public PackageRevision getLatestRevision(PackageConfigurations packageConfig, PackageConfigurations repoConfig) {
+    public PackageRevision getLatestRevision(PackageConfiguration packageConfig, RepositoryConfiguration repoConfig) {
         LOGGER.info(String.format("getLatestRevision called with packageId %s, for repo: %s",
                 packageConfig.get(NuGetPackageConfig.PACKAGE_ID).getValue(), repoConfig.get(RepoUrl.REPO_URL).getValue()));
         validateConfig(repoConfig, packageConfig);
@@ -33,7 +35,7 @@ public class PollerImpl implements PackageRepositoryPoller {
         return packageRevision;
     }
 
-    public PackageRevision latestModificationSince(PackageConfigurations packageConfig, PackageConfigurations repoConfig, PackageRevision previouslyKnownRevision) {
+    public PackageRevision latestModificationSince(PackageConfiguration packageConfig, RepositoryConfiguration repoConfig, PackageRevision previouslyKnownRevision) {
         LOGGER.info(String.format("latestModificationSince called with packageId %s, for repo: %s",
                 packageConfig.get(NuGetPackageConfig.PACKAGE_ID).getValue(), repoConfig.get(RepoUrl.REPO_URL).getValue()));
         validateConfig(repoConfig, packageConfig);
@@ -58,8 +60,8 @@ public class PollerImpl implements PackageRepositoryPoller {
     }
 
     @Override
-    public OperationResponse checkConnectionToRepository(PackageConfigurations repoConfigs) {
-        OperationResponse response = new OperationResponse();
+    public Result checkConnectionToRepository(RepositoryConfiguration repoConfigs) {
+        Result response = new Result();
         NuGetRepoConfig nuGetRepoConfig = new NuGetRepoConfig(repoConfigs);
         RepoUrl repoUrl = nuGetRepoConfig.getRepoUrl();
         if(repoUrl.isHttp()){
@@ -74,19 +76,18 @@ public class PollerImpl implements PackageRepositoryPoller {
     }
 
     @Override
-    public OperationResponse checkConnectionToPackage(PackageConfigurations packageConfigs, PackageConfigurations repoConfigs) {
-        OperationResponse response = checkConnectionToRepository(repoConfigs);
+    public Result checkConnectionToPackage(PackageConfiguration packageConfigs, RepositoryConfiguration repoConfigs) {
+        Result response = checkConnectionToRepository(repoConfigs);
         if(! response.isSuccessful()) return response;
         PackageRevision packageRevision = getLatestRevision(packageConfigs, repoConfigs);
         response.withSuccessMessages("Found "+packageRevision.getRevision());
         return response;
     }
 
-    private void validateConfig(PackageConfigurations repoConfig, PackageConfigurations packageConfig) {
-        Errors errors = new Errors();
-        new PluginConfig().isRepositoryConfigurationValid(repoConfig, errors);
-        new PluginConfig().isPackageConfigurationValid(packageConfig, repoConfig, errors);
-        if (errors.hasErrors()) {
+    private void validateConfig(RepositoryConfiguration repoConfig, PackageConfiguration packageConfig) {
+        ValidationResult errors = new PluginConfig().isRepositoryConfigurationValid(repoConfig);
+        errors.addErrors(new PluginConfig().isPackageConfigurationValid(packageConfig, repoConfig).getErrors());
+        if (!errors.isSuccessful()) {
             StringBuilder stringBuilder = new StringBuilder();
             for (ValidationError validationError : errors.getErrors()) {
                 stringBuilder.append(validationError.getMessage()).append("; ");

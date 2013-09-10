@@ -1,8 +1,9 @@
 package com.tw.go.plugin.nuget.apimpl;
 
+import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
-import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfigurations;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.util.RepoUrl;
@@ -17,17 +18,17 @@ public class PollerImplTest {
     public void PollerShouldExcuteCorrectCmd(){
         PollerImpl poller = new PollerImpl();
         PollerImpl spy = spy(poller);
-        PackageConfigurations repoCfgs = mock(PackageConfigurations.class);
-        PackageConfigurations pkgCfgs = mock(PackageConfigurations.class);
+        RepositoryConfiguration repoCfgs = mock(RepositoryConfiguration.class);
+        PackageConfiguration pkgCfgs = mock(PackageConfiguration.class);
         String repoUrlStr = "http://google.com";//something valid to satisfy connection check
-        when(repoCfgs.get(RepoUrl.REPO_URL)).thenReturn(new PackageConfiguration(RepoUrl.REPO_URL, repoUrlStr));
+        when(repoCfgs.get(RepoUrl.REPO_URL)).thenReturn(new Property(RepoUrl.REPO_URL, repoUrlStr));
         String user = "user";
-        when(repoCfgs.get(RepoUrl.USERNAME)).thenReturn(new PackageConfiguration(RepoUrl.USERNAME, user));
+        when(repoCfgs.get(RepoUrl.USERNAME)).thenReturn(new Property(RepoUrl.USERNAME, user));
         String password = "passwrod";
-        when(repoCfgs.get(RepoUrl.PASSWORD)).thenReturn(new PackageConfiguration(RepoUrl.PASSWORD, password));
+        when(repoCfgs.get(RepoUrl.PASSWORD)).thenReturn(new Property(RepoUrl.PASSWORD, password));
         String packageId = "7-Zip";
-        PackageConfiguration packageConfiguration = new PackageConfiguration(NuGetPackageConfig.PACKAGE_ID, packageId);
-        when(pkgCfgs.get(NuGetPackageConfig.PACKAGE_ID)).thenReturn(packageConfiguration);
+        Property property = new Property(NuGetPackageConfig.PACKAGE_ID, packageId);
+        when(pkgCfgs.get(NuGetPackageConfig.PACKAGE_ID)).thenReturn(property);
         PackageRevision dummyResult = new PackageRevision("1.0", new Date(),"user");
         RepoUrl repoUrl = RepoUrl.create(repoUrlStr, user, password);
         NuGetParams params = new NuGetParams(repoUrl, packageId, null, null, null, true);
