@@ -34,18 +34,18 @@ public class PluginConfig implements PackageMaterialConfiguration {
 
     public RepositoryConfiguration getRepositoryConfiguration() {
         RepositoryConfiguration configurations = new RepositoryConfiguration();
-        configurations.addConfiguration(REPO_CONFIG_REPO_URL);
-        configurations.addConfiguration(REPO_CONFIG_USERNAME);
-        configurations.addConfiguration(REPO_CONFIG_PASSWORD);
+        configurations.add(REPO_CONFIG_REPO_URL);
+        configurations.add(REPO_CONFIG_USERNAME);
+        configurations.add(REPO_CONFIG_PASSWORD);
         return configurations;
     }
 
     public PackageConfiguration getPackageConfiguration() {
         PackageConfiguration configurations = new PackageConfiguration();
-        configurations.addConfiguration(PKG_CONFIG_PACKAGE_ID);
-        configurations.addConfiguration(PKG_CONFIG_POLL_VERSION_FROM);
-        configurations.addConfiguration(PKG_CONFIG_POLL_VERSION_TO);
-        configurations.addConfiguration(PKG_CONFIG_INCLUDE_PRE_RELEASE);
+        configurations.add(PKG_CONFIG_PACKAGE_ID);
+        configurations.add(PKG_CONFIG_POLL_VERSION_FROM);
+        configurations.add(PKG_CONFIG_POLL_VERSION_TO);
+        configurations.add(PKG_CONFIG_INCLUDE_PRE_RELEASE);
         return configurations;
     }
 
