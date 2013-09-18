@@ -36,7 +36,10 @@
             <d:PackageSize m:type="Edm.Int64">397408</d:PackageSize>
             <d:ProjectUrl>http://www.7-zip.org/</d:ProjectUrl>
             <d:ReportAbuseUrl>https://nuget.org/package/ReportAbuse/7-Zip.CommandLine/9.20.0</d:ReportAbuseUrl>
-            <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+            <d:ReleaseNotes>
+                revision comment line 1
+                revision comment line 2
+            </d:ReleaseNotes>
             <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
             <d:Tags>7z 7zip 7-Zip zip</d:Tags>
             <d:Title>7-Zip Command Line Version</d:Title>

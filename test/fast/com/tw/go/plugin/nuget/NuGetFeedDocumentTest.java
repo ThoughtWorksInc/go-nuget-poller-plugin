@@ -39,11 +39,13 @@ public class NuGetFeedDocumentTest {
         DocumentBuilder builder;
         builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new File("test\\fast\\nuget-good-feed.xml"));
-        PackageRevision result = new NuGetPackage("7-Zip.CommandLine","9.20.0").getPackageRevision(new NuGetFeedDocument(doc));
+        PackageRevision result = new NuGetFeedDocument(doc).getPackageRevision(false);
         assertThat(result.getUser(), is("Igor Pavlov"));
         assertThat(result.getRevision(), is("7-Zip.CommandLine-9.20.0"));
+        assertThat(result.getRevisionComment(), is("revision comment line 1"));
         assertThat(result.getTimestamp(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse("2013-06-09T15:36:30.807")));
         assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
         assertThat(result.getDataFor(NuGetPackage.PACKAGE_VERSION), is("9.20.0"));
+        assertThat(result.getDataFor(NuGetPackage.PACKAGE_DESCRIPTION), is("7-Zip is a file archiver with a high compression ratio."));
     }
 }

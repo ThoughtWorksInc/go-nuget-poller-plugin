@@ -42,7 +42,7 @@ public class NuGetPackage {
         String version = feed.getPackageVersion();
         if (!pkgVersion.equals(version))
             throw new RuntimeException(String.format("Version mismatch for %s: %s, %s", pkgName, pkgVersion, version));
-        return createPackageRevision(feed.getPublishedDate(), getPackageLabel(), feed.getAuthor(), feed.getPackageLocation(), feed.getPackageVersion());
+        return feed.getPackageRevision(false);//todo: bring in lastknownversion
     }
 
     private void rejectIfMultipleEntries(NuGetFeedDocument feed) {
@@ -50,7 +50,7 @@ public class NuGetPackage {
             throw new RuntimeException(String.format("Multiple entries in feed for %s %s", pkgName, pkgVersion));
     }
 
-    public PackageRevision createPackageRevision(Date publishedDate, String packageLabel, String author, String packageLocation, String packageVersion) {
+    public PackageRevision createPackageRevisionForNonHttpServers(Date publishedDate, String packageLabel, String author, String packageLocation, String packageVersion) {
         PackageRevision result = new PackageRevision(packageLabel, publishedDate, author);
         result.addData(PACKAGE_LOCATION, packageLocation);
         result.addData(PACKAGE_DESCRIPTION, pkgDescription);

@@ -60,11 +60,32 @@ public class NuGetFeedDocument {
         }
         if (getEntries().getLength() > 1)
             throw new NuGetException(String.format("Multiple entries in feed for %s %s", getEntryTitle(), getPackageVersion()));
-        PackageRevision result = new PackageRevision(getPackageLabel(), getPublishedDate(), getAuthor());
+        PackageRevision result = new PackageRevision(getPackageLabel(), getPublishedDate(), getAuthor(), getReleaseNotes(), getProjectUrl());
         result.addData(NuGetPackage.PACKAGE_LOCATION, getPackageLocation());
         result.addData(NuGetPackage.PACKAGE_DESCRIPTION, getDescriptionSummary());
         result.addData(NuGetPackage.PACKAGE_VERSION, getPackageVersion());
         return result;
+    }
+
+    private String getReleaseNotes() {
+        String releaseNotes = getProperty(getProperties(), "ReleaseNotes");
+        if(releaseNotes == null || releaseNotes.trim().isEmpty()) return null;
+        return firstNonEmptyLine(releaseNotes);
+    }
+
+    private String firstNonEmptyLine(String s) {
+        String[] lines = s.split("\n");
+        for(String line : lines){
+            if(!line.trim().isEmpty())
+                return line.trim();
+        }
+        return null;
+    }
+
+    private String getProjectUrl() {
+        String projectUrl = getProperty(getProperties(), "ProjectUrl");
+        if(projectUrl == null || projectUrl.trim().isEmpty()) return null;
+        return firstNonEmptyLine(projectUrl);
     }
 
     private String getDescriptionSummary() {
@@ -75,7 +96,7 @@ public class NuGetFeedDocument {
 
     private String getFirstLineOfDescription() {
         String description = getProperty(getProperties(), "Description");
-        return description.split("\n")[0];
+        return firstNonEmptyLine(description);
     }
 
     private String getEntrySummary() {
