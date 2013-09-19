@@ -28,6 +28,10 @@ public class NuGetParams {
         return packageId;
     }
 
+    public RepoUrl getRepoUrl() {
+        return repoUrl;
+    }
+
     public boolean isLastVersionKnown() {
         return lastKnownVersion != null;
     }
@@ -47,7 +51,7 @@ public class NuGetParams {
 
     public String getQuery() {
         StringBuilder query = new StringBuilder();
-        query.append(((HttpRepoURL) repoUrl).getUrlStrWithTrailingSlash());
+        query.append(((HttpRepoURL) repoUrl).getUrlWithBasicAuth());
         query.append("GetUpdates()?");
         query.append(String.format("packageIds='%s'", getPackageId()));
         query.append(String.format("&versions='%s'", getEffectiveLowerBound()));
@@ -64,37 +68,6 @@ public class NuGetParams {
         if (getLastKnownVersion() != null) return getLastKnownVersion();
         if (lowerBoundGiven()) return pollVersionFrom;
         return "0.0.1";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        NuGetParams that = (NuGetParams) o;
-
-        if (includePreRelease != that.includePreRelease) return false;
-        if (lastKnownVersion != null ? !lastKnownVersion.equals(that.lastKnownVersion) : that.lastKnownVersion != null)
-            return false;
-        if (!packageId.equals(that.packageId)) return false;
-        if (pollVersionFrom != null ? !pollVersionFrom.equals(that.pollVersionFrom) : that.pollVersionFrom != null)
-            return false;
-        if (pollVersionTo != null ? !pollVersionTo.equals(that.pollVersionTo) : that.pollVersionTo != null)
-            return false;
-        if (!repoUrl.equals(that.repoUrl)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = packageId.hashCode();
-        result = 31 * result + repoUrl.hashCode();
-        result = 31 * result + (pollVersionFrom != null ? pollVersionFrom.hashCode() : 0);
-        result = 31 * result + (pollVersionTo != null ? pollVersionTo.hashCode() : 0);
-        result = 31 * result + (lastKnownVersion != null ? lastKnownVersion.hashCode() : 0);
-        result = 31 * result + (includePreRelease ? 1 : 0);
-        return result;
     }
 
 }
