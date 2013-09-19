@@ -58,7 +58,13 @@ public class PluginConfig implements PackageMaterialConfiguration {
             validationResult.addError(new ValidationError(RepoUrl.REPO_URL, message));
             return validationResult;
         }
-        nuGetRepoConfig.getRepoUrl().validate(validationResult);
+        RepoUrl repoUrl = nuGetRepoConfig.getRepoUrl();
+        if(!repoUrl.isHttp()){
+            String message = "Only http/https urls are supported";
+            LOGGER.error(message);
+            validationResult.addError(new ValidationError(RepoUrl.REPO_URL, message));
+        }
+        repoUrl.validate(validationResult);
         detectInvalidKeys(repoConfigs, validationResult, nuGetRepoConfig.getValidKeys());
         return validationResult;
     }

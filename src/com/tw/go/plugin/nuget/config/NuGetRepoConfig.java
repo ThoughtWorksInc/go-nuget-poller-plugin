@@ -9,9 +9,9 @@ public class NuGetRepoConfig {
     private final RepositoryConfiguration repoConfigs;
     private final Property repoUrlConfig;
 
-    public NuGetRepoConfig(RepositoryConfiguration repoConfigs) {
-        this.repoConfigs = repoConfigs;
-        repoUrlConfig = repoConfigs.get(RepoUrl.REPO_URL);
+    public NuGetRepoConfig(RepositoryConfiguration repoConfig) {
+        this.repoConfigs = repoConfig;
+        repoUrlConfig = repoConfig.get(RepoUrl.REPO_URL);
     }
 
     public String stringValueOf(Property property) {
@@ -33,7 +33,7 @@ public class NuGetRepoConfig {
     }
 
     public boolean isRepoUrlMissing() {
-        return repoUrlConfig == null;
+        return repoUrlConfig == null || repoUrlConfig.getValue() == null || repoUrlConfig.getValue().trim().isEmpty();
     }
 
     public static String[] getValidKeys() {
