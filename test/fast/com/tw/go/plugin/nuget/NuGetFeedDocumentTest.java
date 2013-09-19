@@ -1,6 +1,7 @@
 package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -25,10 +26,10 @@ public class NuGetFeedDocumentTest {
         builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new File("test\\fast\\nuget-multiple-entries.xml"));
         try {
-            new NuGetPackage("pkgName", "1.0").getPackageRevision(new NuGetFeedDocument(doc));
+            new NuGetFeedDocument(doc).getPackageRevision(false);
             fail("Should have thrown excption for multiple entries");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Multiple entries in feed for pkgName 1.0"));
+            assertThat(e.getMessage(), is("Multiple entries in feed for 7-Zip.CommandLine 9.20.0"));
         }
     }
 
@@ -44,8 +45,8 @@ public class NuGetFeedDocumentTest {
         assertThat(result.getRevision(), is("7-Zip.CommandLine-9.20.0"));
         assertThat(result.getRevisionComment(), is("revision comment line 1"));
         assertThat(result.getTimestamp(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse("2013-06-09T15:36:30.807")));
-        assertThat(result.getDataFor(NuGetPackage.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
-        assertThat(result.getDataFor(NuGetPackage.PACKAGE_VERSION), is("9.20.0"));
-        assertThat(result.getDataFor(NuGetPackage.PACKAGE_DESCRIPTION), is("7-Zip is a file archiver with a high compression ratio."));
+        assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
+        assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_VERSION), is("9.20.0"));
+        assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_DESCRIPTION), is("7-Zip is a file archiver with a high compression ratio."));
     }
 }

@@ -6,18 +6,18 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterial
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.Result;
-import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
-import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
-import com.tw.go.plugin.nuget.NuGet;
+import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
+import com.tw.go.plugin.nuget.Feed;
+import com.tw.go.plugin.nuget.NuGetFeedDocument;
 import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 import com.tw.go.plugin.util.HttpRepoURL;
 import com.tw.go.plugin.util.RepoUrl;
 
-public class PollerImpl implements PackageMaterialPoller {
-    private static Logger LOGGER = Logger.getLoggerFor(PollerImpl.class);
+public class NuGetPoller implements PackageMaterialPoller {
+    private static Logger LOGGER = Logger.getLoggerFor(NuGetPoller.class);
 
     public PackageRevision getLatestRevision(PackageConfiguration packageConfig, RepositoryConfiguration repoConfig) {
         LOGGER.info(String.format("getLatestRevision called with packageId %s, for repo: %s",
@@ -64,12 +64,13 @@ public class PollerImpl implements PackageMaterialPoller {
         Result response = new Result();
         NuGetRepoConfig nuGetRepoConfig = new NuGetRepoConfig(repoConfigs);
         RepoUrl repoUrl = nuGetRepoConfig.getRepoUrl();
-        if(repoUrl.isHttp()){
-        try {
-            repoUrl.checkConnection(((HttpRepoURL)repoUrl).getUrlStrWithTrailingSlash()+"$metadata");
-        } catch (Exception e) {
-            response.withErrorMessages(e.getMessage());
-        }                    }else{
+        if (repoUrl.isHttp()) {
+            try {
+                repoUrl.checkConnection(((HttpRepoURL) repoUrl).getUrlStrWithTrailingSlash() + "$metadata");
+            } catch (Exception e) {
+                response.withErrorMessages(e.getMessage());
+            }
+        } else {
             repoUrl.checkConnection();
         }
         return response;
@@ -78,9 +79,9 @@ public class PollerImpl implements PackageMaterialPoller {
     @Override
     public Result checkConnectionToPackage(PackageConfiguration packageConfigs, RepositoryConfiguration repoConfigs) {
         Result response = checkConnectionToRepository(repoConfigs);
-        if(! response.isSuccessful()) return response;
+        if (!response.isSuccessful()) return response;
         PackageRevision packageRevision = getLatestRevision(packageConfigs, repoConfigs);
-        response.withSuccessMessages("Found "+packageRevision.getRevision());
+        response.withSuccessMessages("Found " + packageRevision.getRevision());
         return response;
     }
 
@@ -97,7 +98,9 @@ public class PollerImpl implements PackageMaterialPoller {
         }
     }
 
-    PackageRevision poll(NuGetParams params) {
-        return new NuGet(params).poll();
+    public PackageRevision poll(NuGetParams params) {
+        String url = params.getQuery();
+        LOGGER.info(url);
+        return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());
     }
 }

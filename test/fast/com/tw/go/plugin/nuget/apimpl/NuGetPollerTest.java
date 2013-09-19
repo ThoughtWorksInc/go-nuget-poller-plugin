@@ -13,11 +13,11 @@ import java.util.Date;
 
 import static org.mockito.Mockito.*;
 
-public class PollerImplTest {
+public class NuGetPollerTest {
     @Test
     public void PollerShouldExcuteCorrectCmd(){
-        PollerImpl poller = new PollerImpl();
-        PollerImpl spy = spy(poller);
+        NuGetPoller poller = new NuGetPoller();
+        NuGetPoller spy = spy(poller);
         RepositoryConfiguration repoCfgs = mock(RepositoryConfiguration.class);
         PackageConfiguration pkgCfgs = mock(PackageConfiguration.class);
         String repoUrlStr = "http://google.com";//something valid to satisfy connection check

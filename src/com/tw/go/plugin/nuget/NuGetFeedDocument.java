@@ -1,6 +1,7 @@
 package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
+import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -61,9 +62,9 @@ public class NuGetFeedDocument {
         if (getEntries().getLength() > 1)
             throw new NuGetException(String.format("Multiple entries in feed for %s %s", getEntryTitle(), getPackageVersion()));
         PackageRevision result = new PackageRevision(getPackageLabel(), getPublishedDate(), getAuthor(), getReleaseNotes(), getProjectUrl());
-        result.addData(NuGetPackage.PACKAGE_LOCATION, getPackageLocation());
-        result.addData(NuGetPackage.PACKAGE_DESCRIPTION, getDescriptionSummary());
-        result.addData(NuGetPackage.PACKAGE_VERSION, getPackageVersion());
+        result.addData(NuGetPackageConfig.PACKAGE_LOCATION, getPackageLocation());
+        result.addData(NuGetPackageConfig.PACKAGE_DESCRIPTION, getDescriptionSummary());
+        result.addData(NuGetPackageConfig.PACKAGE_VERSION, getPackageVersion());
         return result;
     }
 

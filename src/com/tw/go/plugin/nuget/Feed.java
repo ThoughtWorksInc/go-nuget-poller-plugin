@@ -1,5 +1,6 @@
 package com.tw.go.plugin.nuget;
 
+import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.tw.go.plugin.util.HttpRepoURL;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -12,8 +13,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.net.URI;
 
 public class Feed {
+    private static Logger LOGGER = Logger.getLoggerFor(Feed.class);
     private final String url;
-    //TODO:ensure not more than 3 downloads in progress - won't happen for the same repo, ensure for different
 
     public Feed(String url) {
         this.url = url;
@@ -27,11 +28,11 @@ public class Feed {
             HttpResponse response = client.execute(method);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
-            DocumentBuilder builder;
-            builder = factory.newDocumentBuilder();
-            return builder.parse(response.getEntity().getContent());
+            return factory.newDocumentBuilder().parse(response.getEntity().getContent());
         } catch (Exception ex) {
-            throw new RuntimeException(String.format("%s (%s) while getting package feed for : %s ", ex.getClass().getSimpleName(),ex.getMessage(), url), ex);
+            String message = String.format("%s (%s) while getting package feed for : %s ", ex.getClass().getSimpleName(), ex.getMessage(), url);
+            LOGGER.error(message);
+            throw new RuntimeException(message, ex);
         } finally {
             method.releaseConnection();
             client.getConnectionManager().shutdown();

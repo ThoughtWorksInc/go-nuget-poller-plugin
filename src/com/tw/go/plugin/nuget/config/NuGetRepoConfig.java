@@ -1,7 +1,6 @@
 package com.tw.go.plugin.nuget.config;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
-import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.tw.go.plugin.util.RepoUrl;
 
@@ -25,6 +24,7 @@ public class NuGetRepoConfig {
                 stringValueOf(repoConfigs.get(RepoUrl.USERNAME)),
                 stringValueOf(repoConfigs.get(RepoUrl.PASSWORD)));
     }
+
     public boolean isHttp() {
         return RepoUrl.create(
                 repoUrlConfig.getValue(),

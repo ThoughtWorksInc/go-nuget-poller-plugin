@@ -4,7 +4,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.tw.go.plugin.util.RepoUrl;
 import org.junit.Test;
 
-import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSION;
+import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.PACKAGE_VERSION;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 

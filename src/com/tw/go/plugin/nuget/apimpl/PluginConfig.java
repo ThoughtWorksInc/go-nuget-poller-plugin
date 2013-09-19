@@ -2,8 +2,8 @@ package com.tw.go.plugin.nuget.apimpl;
 
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.material.packagerepository.*;
-import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
+import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 import com.tw.go.plugin.util.RepoUrl;
@@ -59,25 +59,27 @@ public class PluginConfig implements PackageMaterialConfiguration {
             return validationResult;
         }
         RepoUrl repoUrl = nuGetRepoConfig.getRepoUrl();
-        if(!repoUrl.isHttp()){
+        if (!repoUrl.isHttp()) {
             String message = "Only http/https urls are supported";
             LOGGER.error(message);
             validationResult.addError(new ValidationError(RepoUrl.REPO_URL, message));
         }
         repoUrl.validate(validationResult);
-        detectInvalidKeys(repoConfigs, validationResult, nuGetRepoConfig.getValidKeys());
+        detectInvalidKeys(repoConfigs, validationResult, NuGetRepoConfig.getValidKeys());
         return validationResult;
     }
 
-    private void detectInvalidKeys(Configuration configs, ValidationResult errors, String[] validKeys){
-        for(Property config : configs.list()){
+    private void detectInvalidKeys(Configuration config, ValidationResult errors, String[] validKeys) {
+        for (Property property : config.list()) {
             boolean valid = false;
-            for(String validKey : validKeys){
-                if(validKey.equals(config.getKey())) {
-                    valid = true; break;
+            for (String validKey : validKeys) {
+                if (validKey.equals(property.getKey())) {
+                    valid = true;
+                    break;
                 }
             }
-            if(!valid) errors.addError(new ValidationError(String.format("Unsupported key: %s. Valid keys: %s", config.getKey(), Arrays.toString(validKeys))));
+            if (!valid)
+                errors.addError(new ValidationError(String.format("Unsupported key: %s. Valid keys: %s", property.getKey(), Arrays.toString(validKeys))));
         }
     }
 
@@ -108,7 +110,7 @@ public class PluginConfig implements PackageMaterialConfiguration {
         }
         detectInvalidKeys(packageConfig, validationResult, NuGetPackageConfig.getValidKeys());
         NuGetRepoConfig nuGetRepoConfig = new NuGetRepoConfig(repoConfig);
-        if(!nuGetRepoConfig.isHttp() && nuGetPackageConfig.hasBounds()){
+        if (!nuGetRepoConfig.isHttp() && nuGetPackageConfig.hasBounds()) {
             String message = "Version constraints are only supported for NuGet feed servers";
             LOGGER.info(message);
             validationResult.addError(new ValidationError(message));
@@ -116,13 +118,4 @@ public class PluginConfig implements PackageMaterialConfiguration {
         return validationResult;
     }
 
-    public void testConnection(PackageConfiguration packageConfiguration, RepositoryConfiguration repositoryConfigurations) {
-        try {
-            new PollerImpl().getLatestRevision(packageConfiguration, repositoryConfigurations);
-        } catch (Exception e) {
-            String message = "Test Connection failed: " + e.getMessage();
-            LOGGER.warn(message);
-            throw new RuntimeException(message, e);
-        }
-    }
 }

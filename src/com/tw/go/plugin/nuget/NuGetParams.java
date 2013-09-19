@@ -4,7 +4,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.tw.go.plugin.util.HttpRepoURL;
 import com.tw.go.plugin.util.RepoUrl;
 
-import static com.tw.go.plugin.nuget.NuGetPackage.PACKAGE_VERSION;
+import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.PACKAGE_VERSION;
 
 public class NuGetParams {
     public static final String ANY = "ANY";
@@ -13,7 +13,7 @@ public class NuGetParams {
     private String pollVersionFrom = ANY;
     private String pollVersionTo = ANY;
     private PackageRevision lastKnownVersion = null;
-    private boolean includePreRelease = true;//TODO: surface this option
+    private boolean includePreRelease = true;
 
     public NuGetParams(RepoUrl repoUrl, String packageId, String pollVersionFrom, String pollVersionTo, PackageRevision previouslyKnownRevision, boolean includePreReleaseVersions) {
         this.repoUrl = repoUrl;
@@ -24,29 +24,8 @@ public class NuGetParams {
         this.includePreRelease = includePreReleaseVersions;
     }
 
-    public String getRepoId() {
-        return repoUrl.getRepoId();
-    }
-
     public String getPackageId() {
         return packageId;
-    }
-
-    public String getPrefixedPackageId() {
-        if (!repoUrl.isHttp()) return packageId;
-        return "Id:" + packageId;
-    }
-
-    public String getRepoUrlStr() {
-        return repoUrl.getUrlStr();
-    }
-
-    public RepoUrl getRepoUrl() {
-        return repoUrl;
-    }
-
-    public boolean isHttp() {
-        return repoUrl.isHttp();
     }
 
     public boolean isLastVersionKnown() {
@@ -66,20 +45,9 @@ public class NuGetParams {
         return !ANY.equals(pollVersionTo);
     }
 
-    public String getPackageAndVersion() {
-        if(eitherBoundGiven())
-        return String.format("%s, %s to %s", packageId, displayVersion(pollVersionFrom), displayVersion(pollVersionTo));
-        return packageId;
-    }
-
-    private String displayVersion(String version) {
-        if(ANY.equals(version)) return ANY;
-        return "V" + version;
-    }
-
     public String getQuery() {
         StringBuilder query = new StringBuilder();
-        query.append(((HttpRepoURL)repoUrl).getUrlStrWithTrailingSlash());
+        query.append(((HttpRepoURL) repoUrl).getUrlStrWithTrailingSlash());
         query.append("GetUpdates()?");
         query.append(String.format("packageIds='%s'", getPackageId()));
         query.append(String.format("&versions='%s'", getEffectiveLowerBound()));
@@ -129,11 +97,4 @@ public class NuGetParams {
         return result;
     }
 
-    public boolean eitherBoundGiven() {
-        return upperBoundGiven() || lowerBoundGiven();
-    }
-
-    public boolean shoudIncludePreRelease() {
-        return includePreRelease;
-    }
 }

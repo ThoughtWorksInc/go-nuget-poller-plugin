@@ -8,6 +8,9 @@ public class NuGetPackageConfig {
     public static final String POLL_VERSION_FROM = "POLL_VERSION_FROM";
     public static final String POLL_VERSION_TO = "POLL_VERSION_TO";
     public static final String INCLUDE_PRE_RELEASE = "INCLUDE_PRE_RELEASE";
+    public static final String PACKAGE_DESCRIPTION = "DESCRIPTION";
+    public static final String PACKAGE_LOCATION = "LOCATION";
+    public static final String PACKAGE_VERSION = "VERSION";
     private final PackageConfiguration packageConfigs;
     private final Property packageIdConfig;
 

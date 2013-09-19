@@ -10,10 +10,10 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class MaterialImplTest {
+public class NuGetProviderTest {
     @Test
     public void shouldGetNugetRepositoryConfig() {
-        MaterialImpl repositoryMaterial = new MaterialImpl();
+        NuGetProvider repositoryMaterial = new NuGetProvider();
         PackageMaterialConfiguration repositoryConfiguration = repositoryMaterial.getConfig();
         assertThat(repositoryConfiguration, is(notNullValue()));
         assertThat(repositoryConfiguration, instanceOf(PluginConfig.class));
@@ -21,9 +21,9 @@ public class MaterialImplTest {
 
     @Test
     public void shouldGetNugetRepositoryPoller() {
-        MaterialImpl repositoryMaterial = new MaterialImpl();
+        NuGetProvider repositoryMaterial = new NuGetProvider();
         PackageMaterialPoller poller = repositoryMaterial.getPoller();
         assertThat(poller, is(notNullValue()));
-        assertThat(poller, instanceOf(PollerImpl.class));
+        assertThat(poller, instanceOf(NuGetPoller.class));
     }
 }
