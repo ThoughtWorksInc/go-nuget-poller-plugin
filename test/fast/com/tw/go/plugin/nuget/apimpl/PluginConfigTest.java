@@ -40,7 +40,7 @@ public class PluginConfigTest {
         assertThat(configurations.get(RepoUrl.REPO_URL), is(notNullValue()));
         assertThat(configurations.get(RepoUrl.REPO_URL).getOption(Property.SECURE), is(false));
         assertThat(configurations.get(RepoUrl.REPO_URL).getOption(Property.REQUIRED), is(true));
-        assertThat(configurations.get(RepoUrl.REPO_URL).getOption(DISPLAY_NAME), is("Package Source or Feed Server URL"));
+        assertThat(configurations.get(RepoUrl.REPO_URL).getOption(DISPLAY_NAME), is("NuGet server API root"));
         assertThat(configurations.get(RepoUrl.REPO_URL).getOption(DISPLAY_ORDER), is(0));
         assertThat(configurations.get(RepoUrl.USERNAME), is(notNullValue()));
         assertThat(configurations.get(RepoUrl.USERNAME).getOption(Property.SECURE), is(false));

@@ -47,6 +47,5 @@ public class NuGetFeedDocumentTest {
         assertThat(result.getTimestamp(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse("2013-06-09T15:36:30.807")));
         assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
         assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_VERSION), is("9.20.0"));
-        assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_DESCRIPTION), is("7-Zip is a file archiver with a high compression ratio."));
     }
 }

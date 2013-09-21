@@ -18,7 +18,7 @@ public class PluginConfig implements PackageMaterialConfiguration {
 
     private static Logger LOGGER = Logger.getLoggerFor(PluginConfig.class);
     public static final Property REPO_CONFIG_REPO_URL =
-            new Property(RepoUrl.REPO_URL).with(DISPLAY_NAME, "Package Source or Feed Server URL").with(DISPLAY_ORDER, 0);
+            new Property(RepoUrl.REPO_URL).with(DISPLAY_NAME, "NuGet server API root").with(DISPLAY_ORDER, 0);
     public static final Property REPO_CONFIG_USERNAME =
             new Property(RepoUrl.USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
     public static final Property REPO_CONFIG_PASSWORD =

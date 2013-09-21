@@ -2,7 +2,6 @@ package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
-import com.tw.go.plugin.util.HttpRepoURL;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -56,29 +55,28 @@ public class NuGetFeedDocument {
     }
 
     public PackageRevision getPackageRevision(boolean lastVersionKnown) {
-        if (getEntries().getLength() == 0){
-            if(lastVersionKnown) return null;
+        if (getEntries().getLength() == 0) {
+            if (lastVersionKnown) return null;
             else throw new NuGetException("No such package found");
         }
         if (getEntries().getLength() > 1)
             throw new NuGetException(String.format("Multiple entries in feed for %s %s", getEntryTitle(), getPackageVersion()));
         PackageRevision result = new PackageRevision(getPackageLabel(), getPublishedDate(), getAuthor(), getReleaseNotes(), getProjectUrl());
         result.addData(NuGetPackageConfig.PACKAGE_LOCATION, getPackageLocation());
-        result.addData(NuGetPackageConfig.PACKAGE_DESCRIPTION, getDescriptionSummary());
         result.addData(NuGetPackageConfig.PACKAGE_VERSION, getPackageVersion());
         return result;
     }
 
     private String getReleaseNotes() {
         String releaseNotes = getProperty(getProperties(), "ReleaseNotes");
-        if(releaseNotes == null || releaseNotes.trim().isEmpty()) return null;
+        if (releaseNotes == null || releaseNotes.trim().isEmpty()) return null;
         return firstNonEmptyLine(releaseNotes);
     }
 
     private String firstNonEmptyLine(String s) {
         String[] lines = s.split("\n");
-        for(String line : lines){
-            if(!line.trim().isEmpty())
+        for (String line : lines) {
+            if (!line.trim().isEmpty())
                 return line.trim();
         }
         return null;
@@ -86,24 +84,8 @@ public class NuGetFeedDocument {
 
     private String getProjectUrl() {
         String projectUrl = getProperty(getProperties(), "ProjectUrl");
-        if(projectUrl == null || projectUrl.trim().isEmpty()) return null;
+        if (projectUrl == null || projectUrl.trim().isEmpty()) return null;
         return firstNonEmptyLine(projectUrl);
-    }
-
-    private String getDescriptionSummary() {
-        String summary = getEntrySummary();
-        if(summary == null || summary.trim().isEmpty()) return getFirstLineOfDescription();
-        return summary;
-    }
-
-    private String getFirstLineOfDescription() {
-        String description = getProperty(getProperties(), "Description");
-        return firstNonEmptyLine(description);
-    }
-
-    private String getEntrySummary() {
-        NodeList summary = firstOf(getEntries()).getElementsByTagName("summary");
-        return summary.item(0).getTextContent();
     }
 
     private String getPackageLabel() {
