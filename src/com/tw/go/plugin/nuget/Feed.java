@@ -26,6 +26,10 @@ public class Feed {
         method.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 10 * 1000);
         try {
             HttpResponse response = client.execute(method);
+            if(response.getStatusLine().getStatusCode() != 200){
+                throw new RuntimeException(String.format("HTTP %s, %s",
+                        response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+            }
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             return factory.newDocumentBuilder().parse(response.getEntity().getContent());

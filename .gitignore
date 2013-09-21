@@ -5,3 +5,4 @@ target/*
 go-plugin-api*.jar
 reports/*
 lib/*
+todo

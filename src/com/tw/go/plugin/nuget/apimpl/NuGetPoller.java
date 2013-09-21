@@ -13,6 +13,7 @@ import com.tw.go.plugin.nuget.NuGetFeedDocument;
 import com.tw.go.plugin.nuget.NuGetParams;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
+import com.tw.go.plugin.util.Credentials;
 import com.tw.go.plugin.util.HttpRepoURL;
 import com.tw.go.plugin.util.RepoUrl;
 
@@ -73,13 +74,17 @@ public class NuGetPoller implements PackageMaterialPoller {
         } else {
             repoUrl.checkConnection();
         }
+        LOGGER.info(response.getMessagesForDisplay());
         return response;
     }
 
     @Override
     public Result checkConnectionToPackage(PackageConfiguration packageConfigs, RepositoryConfiguration repoConfigs) {
         Result response = checkConnectionToRepository(repoConfigs);
-        if (!response.isSuccessful()) return response;
+        if (!response.isSuccessful()) {
+            LOGGER.info(response.getMessagesForDisplay());
+            return response;
+        }
         PackageRevision packageRevision = getLatestRevision(packageConfigs, repoConfigs);
         response.withSuccessMessages("Found " + packageRevision.getRevision());
         return response;
@@ -101,6 +106,14 @@ public class NuGetPoller implements PackageMaterialPoller {
     public PackageRevision poll(NuGetParams params) {
         String url = params.getQuery();
         LOGGER.info(url);
-        return new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());
+        PackageRevision packageRevision = new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());
+        if(params.getRepoUrl().getCredentials().provided())
+            addUserInfoToLocation(packageRevision, params.getRepoUrl().getCredentials());
+        return packageRevision;
+    }
+
+    private void addUserInfoToLocation(PackageRevision packageRevision, Credentials credentials) {
+        String location = packageRevision.getDataFor(NuGetPackageConfig.PACKAGE_LOCATION);
+        packageRevision.addData(NuGetPackageConfig.PACKAGE_LOCATION, HttpRepoURL.getUrlWithCreds(location, credentials));
     }
 }

@@ -2,6 +2,7 @@ package com.tw.go.plugin.nuget;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
+import com.tw.go.plugin.util.HttpRepoURL;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
