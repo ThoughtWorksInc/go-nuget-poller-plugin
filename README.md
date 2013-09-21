@@ -17,7 +17,7 @@ Repository definition
 ---------------------
 ![Add a NuGet repository][1]
 
-NuGet Server URL must be a valid http or https URL. For example, to add nuget.org as a repository, specify the URL as http://nuget.org/api/v2. The plugin will try to access <URL>$metadata to report successful connection. Basic authentication (user:password@host/path) is supported.
+NuGet Server URL must be a valid http or https URL. For example, to add nuget.org as a repository, specify the URL as http://nuget.org/api/v2. The plugin will try to access URL$metadata to report successful connection. Basic authentication (user:password@host/path) is supported.
 
 Package definition
 ------------------
@@ -61,5 +61,5 @@ Notes
 -----
 This plugin will detect at max one package revision per minute (the default interval at which Go materials poll). If multiple versions of a package get published to a repo in the time interval between two polls, Go will only register the latest version in that interval.
 	
-[1]: img/nuget-pkg-repo.png  "Define NuGet Package Repository"
+[1]: img/nuget-repo.png  "Define NuGet Package Repository"
 [2]: img/nuget-add-pkg.png  "Define package as material for a pipeline"
