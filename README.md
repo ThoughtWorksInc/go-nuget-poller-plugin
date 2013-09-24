@@ -57,6 +57,8 @@ To download the package locally on the agent, we could write a [curl](http://cur
 
 When the task executes on the agent, the environment variables get subsituted and the package gets downloaded.
 
+Alternatively, we could choose to *nuget install* the package like [this](https://github.com/goteam/go-command-repo/blob/master/package/nuget/nuget-install.xml)
+
 Notes
 -----
 This plugin will detect at max one package revision per minute (the default interval at which Go materials poll). If multiple versions of a package get published to a repo in the time interval between two polls, Go will only register the latest version in that interval.
