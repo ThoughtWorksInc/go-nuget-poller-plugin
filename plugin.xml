@@ -2,12 +2,12 @@
 <go-plugin id="nuget" version="1">
 <about>
     <name>Nuget plugin</name>
-    <version>1.0.0</version>
+    <version>0.1.0</version>
     <target-go-version>13.3</target-go-version>
     <description>Plugin that polls a Nuget Feed Server</description>
     <vendor>
-        <name>ThoughtWorks Go Team</name>
-        <url>www.thoughtworks.com</url>
+        <name>Sriram Narayan</name>
+        <url>https://github.com/ThoughtWorksInc/go-nuget-poller-plugin/blob/master/README.md</url>
     </vendor>
 </about>
 </go-plugin>
