@@ -11,7 +11,7 @@ This is a pure Java plugin. It does not need nuget.exe. You may however require 
 
 Installation
 ------------
-Just drop go-nuget-poller.jar into plugins/external directory and restart Go. More details [here](http://www.thoughtworks.com/products/docs/go/13.3/help/plugin_user_guide.html)
+Just drop [go-nuget-poller.jar](https://github.com/ThoughtWorksInc/go-nuget-poller-plugin/releases/download/v0.1/go-nuget-poller.jar) into plugins/external directory and restart Go. More details [here](http://www.thoughtworks.com/products/docs/go/13.3/help/plugin_user_guide.html)
 
 Repository definition
 ---------------------
@@ -56,6 +56,8 @@ To download the package locally on the agent, we could write a [curl](http://cur
                 </exec>
 
 When the task executes on the agent, the environment variables get subsituted and the package gets downloaded.
+
+Alternatively, we could choose to *nuget install* the package like [this](https://github.com/goteam/go-command-repo/blob/master/package/nuget/nuget-install.xml)
 
 Notes
 -----
