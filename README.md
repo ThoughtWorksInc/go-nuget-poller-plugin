@@ -21,7 +21,7 @@ NuGet Server URL must be a valid http or https URL. For example, to add nuget.or
 
 Package definition
 ------------------
-Click check package to make sure the plugin understands what you are looking for.
+Click check package to make sure the plugin understands what you are looking for. Note that the version constraints are ANDed if both are specified.
 
 ![Define a package as material for a pipeline][2]
 
