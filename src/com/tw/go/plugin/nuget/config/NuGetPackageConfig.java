@@ -1,6 +1,6 @@
 package com.tw.go.plugin.nuget.config;
 
-import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
+import com.thoughtworks.go.plugin.api.config.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
 
 public class NuGetPackageConfig {

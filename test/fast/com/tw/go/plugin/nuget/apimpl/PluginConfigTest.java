@@ -1,11 +1,10 @@
 package com.tw.go.plugin.nuget.apimpl;
 
-import com.thoughtworks.go.plugin.api.material.packagerepository.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialProperty;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
-import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
-import com.tw.go.plugin.util.InvalidRepoUrl;
+import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import com.tw.go.plugin.nuget.config.NuGetRepoConfig;
 import com.tw.go.plugin.util.RepoUrl;
@@ -16,9 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.DISPLAY_NAME;
-import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.DISPLAY_ORDER;
-import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.REQUIRED;
+import static com.thoughtworks.go.plugin.api.config.Property.*;
 import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.*;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
@@ -38,18 +35,18 @@ public class PluginConfigTest {
     public void shouldGetRepositoryConfiguration() {
         RepositoryConfiguration configurations = pluginConfig.getRepositoryConfiguration();
         assertThat(configurations.get(RepoUrl.REPO_URL), is(notNullValue()));
-        assertThat(configurations.get(RepoUrl.REPO_URL).getOption(Property.SECURE), is(false));
-        assertThat(configurations.get(RepoUrl.REPO_URL).getOption(Property.REQUIRED), is(true));
+        assertThat(configurations.get(RepoUrl.REPO_URL).getOption(SECURE), is(false));
+        assertThat(configurations.get(RepoUrl.REPO_URL).getOption(REQUIRED), is(true));
         assertThat(configurations.get(RepoUrl.REPO_URL).getOption(DISPLAY_NAME), is("NuGet server API root"));
         assertThat(configurations.get(RepoUrl.REPO_URL).getOption(DISPLAY_ORDER), is(0));
         assertThat(configurations.get(RepoUrl.USERNAME), is(notNullValue()));
-        assertThat(configurations.get(RepoUrl.USERNAME).getOption(Property.SECURE), is(false));
-        assertThat(configurations.get(RepoUrl.USERNAME).getOption(Property.REQUIRED), is(false));
+        assertThat(configurations.get(RepoUrl.USERNAME).getOption(SECURE), is(false));
+        assertThat(configurations.get(RepoUrl.USERNAME).getOption(REQUIRED), is(false));
         assertThat(configurations.get(RepoUrl.USERNAME).getOption(DISPLAY_NAME), is("UserName"));
         assertThat(configurations.get(RepoUrl.USERNAME).getOption(DISPLAY_ORDER), is(1));
         assertThat(configurations.get(RepoUrl.PASSWORD), is(notNullValue()));
-        assertThat(configurations.get(RepoUrl.PASSWORD).getOption(Property.SECURE), is(true));
-        assertThat(configurations.get(RepoUrl.PASSWORD).getOption(Property.REQUIRED), is(false));
+        assertThat(configurations.get(RepoUrl.PASSWORD).getOption(SECURE), is(true));
+        assertThat(configurations.get(RepoUrl.PASSWORD).getOption(REQUIRED), is(false));
         assertThat(configurations.get(RepoUrl.PASSWORD).getOption(DISPLAY_NAME), is("Password"));
         assertThat(configurations.get(RepoUrl.PASSWORD).getOption(DISPLAY_ORDER), is(2));
     }
@@ -78,25 +75,27 @@ public class PluginConfigTest {
         assertForRepositoryConfigurationErrors(repoConfigurations(RepoUrl.REPO_URL, "incorrectUrl"), asList(new ValidationError(RepoUrl.REPO_URL, "Only http/https urls are supported")), false);
         assertForRepositoryConfigurationErrors(repoConfigurations(RepoUrl.REPO_URL, "http://correct.com/url"), new ArrayList<ValidationError>(), true);
     }
+
     @Test
     public void shouldRejectUnsupportedTagsInRepoConfig() {
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(RepoUrl.REPO_URL, "http://nuget.org"));
-        repoConfig.add(new Property("unsupported_key", "value"));
+        repoConfig.add(new PackageMaterialProperty(RepoUrl.REPO_URL, "http://nuget.org"));
+        repoConfig.add(new PackageMaterialProperty("unsupported_key", "value"));
         assertForRepositoryConfigurationErrors(
                 repoConfig,
-                asList(new ValidationError("Unsupported key: unsupported_key. Valid keys: "+ Arrays.toString(NuGetRepoConfig.getValidKeys()))),
+                asList(new ValidationError("Unsupported key: unsupported_key. Valid keys: " + Arrays.toString(NuGetRepoConfig.getValidKeys()))),
                 false);
 
     }
+
     @Test
     public void shouldRejectUnsupportedTagsInPkgConfig() {
         PackageConfiguration pkgConfig = new PackageConfiguration();
-        pkgConfig.add(new Property(PACKAGE_ID, "abc"));
-        pkgConfig.add(new Property("unsupported_key", "value"));
+        pkgConfig.add(new PackageMaterialProperty(PACKAGE_ID, "abc"));
+        pkgConfig.add(new PackageMaterialProperty("unsupported_key", "value"));
         assertForPackageConfigurationErrors(
                 pkgConfig,
-                asList(new ValidationError("Unsupported key: unsupported_key. Valid keys: "+ Arrays.toString(NuGetPackageConfig.getValidKeys()))),
+                asList(new ValidationError("Unsupported key: unsupported_key. Valid keys: " + Arrays.toString(NuGetPackageConfig.getValidKeys()))),
                 false);
     }
 
@@ -118,7 +117,7 @@ public class PluginConfigTest {
 
     private void assertForPackageConfigurationErrors(PackageConfiguration packageConfiguration, List<ValidationError> expectedErrors, boolean expectedValidationResult) {
         final RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.add(new Property(RepoUrl.REPO_URL, "http://nuget.org/v2"));
+        repoConfig.add(new PackageMaterialProperty(RepoUrl.REPO_URL, "http://nuget.org/v2"));
         ValidationResult errors = pluginConfig.isPackageConfigurationValid(packageConfiguration, repoConfig);
         assertThat(errors.isSuccessful(), is(expectedValidationResult));
         assertThat(errors.getErrors().size(), is(expectedErrors.size()));
@@ -127,12 +126,13 @@ public class PluginConfigTest {
 
     private PackageConfiguration configurations(String key, String value) {
         PackageConfiguration packageConfiguration = new PackageConfiguration();
-        packageConfiguration.add(new Property(key, value));
+        packageConfiguration.add(new PackageMaterialProperty(key, value));
         return packageConfiguration;
     }
+
     private RepositoryConfiguration repoConfigurations(String key, String value) {
         RepositoryConfiguration packageConfiguration = new RepositoryConfiguration();
-        packageConfiguration.add(new Property(key, value));
+        packageConfiguration.add(new PackageMaterialProperty(key, value));
         return packageConfiguration;
     }
 }

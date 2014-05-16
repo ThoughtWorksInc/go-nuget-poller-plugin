@@ -1,7 +1,12 @@
 package com.tw.go.plugin.nuget.apimpl;
 
+import com.thoughtworks.go.plugin.api.config.Configuration;
+import com.thoughtworks.go.plugin.api.config.Property;
 import com.thoughtworks.go.plugin.api.logging.Logger;
-import com.thoughtworks.go.plugin.api.material.packagerepository.*;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageConfiguration;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialConfiguration;
+import com.thoughtworks.go.plugin.api.material.packagerepository.PackageMaterialProperty;
+import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationError;
 import com.thoughtworks.go.plugin.api.response.validation.ValidationResult;
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
@@ -10,7 +15,7 @@ import com.tw.go.plugin.util.RepoUrl;
 
 import java.util.Arrays;
 
-import static com.thoughtworks.go.plugin.api.material.packagerepository.Property.*;
+import static com.thoughtworks.go.plugin.api.config.Property.*;
 import static com.tw.go.plugin.nuget.config.NuGetPackageConfig.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -18,19 +23,19 @@ public class PluginConfig implements PackageMaterialConfiguration {
 
     private static Logger LOGGER = Logger.getLoggerFor(PluginConfig.class);
     public static final Property REPO_CONFIG_REPO_URL =
-            new Property(RepoUrl.REPO_URL).with(DISPLAY_NAME, "NuGet server API root").with(DISPLAY_ORDER, 0);
+            new PackageMaterialProperty(RepoUrl.REPO_URL).with(DISPLAY_NAME, "NuGet server API root").with(DISPLAY_ORDER, 0);
     public static final Property REPO_CONFIG_USERNAME =
-            new Property(RepoUrl.USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
+            new PackageMaterialProperty(RepoUrl.USERNAME).with(REQUIRED, false).with(DISPLAY_NAME, "UserName").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
     public static final Property REPO_CONFIG_PASSWORD =
-            new Property(RepoUrl.PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
+            new PackageMaterialProperty(RepoUrl.PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
     public static final Property PKG_CONFIG_PACKAGE_ID =
-            new Property(PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
+            new PackageMaterialProperty(PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
     public static final Property PKG_CONFIG_POLL_VERSION_FROM =
-            new Property(POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
+            new PackageMaterialProperty(POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
     public static final Property PKG_CONFIG_POLL_VERSION_TO =
-            new Property(POLL_VERSION_TO).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
+            new PackageMaterialProperty(POLL_VERSION_TO).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
     public static final Property PKG_CONFIG_INCLUDE_PRE_RELEASE =
-            new Property(INCLUDE_PRE_RELEASE).with(REQUIRED, false).with(DISPLAY_NAME, "Include Prerelease? (yes/no, defaults to yes)").with(DISPLAY_ORDER, 3);
+            new PackageMaterialProperty(INCLUDE_PRE_RELEASE).with(REQUIRED, false).with(DISPLAY_NAME, "Include Prerelease? (yes/no, defaults to yes)").with(DISPLAY_ORDER, 3);
 
     public RepositoryConfiguration getRepositoryConfiguration() {
         RepositoryConfiguration configurations = new RepositoryConfiguration();
