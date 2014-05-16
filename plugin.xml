@@ -2,8 +2,8 @@
 <go-plugin id="nuget" version="1">
 <about>
     <name>Nuget plugin</name>
-    <version>0.1.0</version>
-    <target-go-version>13.3</target-go-version>
+    <version>0.2.0</version>
+    <target-go-version>14.1</target-go-version>
     <description>Plugin that polls a Nuget Feed Server</description>
     <vendor>
         <name>Sriram Narayan</name>
