@@ -11,7 +11,7 @@ This is a pure Java plugin. It does not need nuget.exe. You may however require 
 
 Installation
 ------------
-Just drop [go-nuget-poller.jar](https://github.com/ThoughtWorksInc/go-nuget-poller-plugin/releases/download/v0.1.0/go-nuget-poller.jar) into plugins/external directory and restart Go. More details [here](http://www.thoughtworks.com/products/docs/go/13.3/help/plugin_user_guide.html)
+Just drop [go-nuget-poller.jar](https://github.com/ThoughtWorksInc/go-nuget-poller-plugin/releases/download/v1.0.0/go-nuget-poller-plugin.jar) into plugins/external directory and restart Go. More details [here](http://www.thoughtworks.com/products/docs/go/13.3/help/plugin_user_guide.html)
 
 Repository definition
 ---------------------
