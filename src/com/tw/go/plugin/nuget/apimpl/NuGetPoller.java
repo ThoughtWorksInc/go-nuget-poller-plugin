@@ -105,7 +105,6 @@ public class NuGetPoller implements PackageMaterialPoller {
 
     public PackageRevision poll(NuGetParams params) {
         String url = params.getQuery();
-        LOGGER.info(url);
         PackageRevision packageRevision = new NuGetFeedDocument(getFeed(url).download()).getPackageRevision(params.isLastVersionKnown());
         if (packageRevision != null && params.getRepoUrl().getCredentials().provided())
             addUserInfoToLocation(packageRevision, params.getRepoUrl().getCredentials());
