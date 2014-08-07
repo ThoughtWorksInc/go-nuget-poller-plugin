@@ -68,7 +68,12 @@ public class PluginConfigTest {
         assertThat(configurations.get(POLL_VERSION_TO).getOption(DISPLAY_ORDER), is(2));
         assertThat(configurations.get(POLL_VERSION_TO).getOption(REQUIRED), is(false));
         assertThat(configurations.get(POLL_VERSION_TO).getOption(PART_OF_IDENTITY), is(true));
+        assertNotNull(configurations.get(INCLUDE_PRE_RELEASE));
+        assertThat(configurations.get(INCLUDE_PRE_RELEASE).getOption(DISPLAY_NAME), is("Include Prerelease? (yes/no, defaults to yes)"));
+        assertThat(configurations.get(INCLUDE_PRE_RELEASE).getOption(DISPLAY_ORDER), is(3));
+        assertThat(configurations.get(INCLUDE_PRE_RELEASE).getOption(REQUIRED), is(false));
         assertThat(configurations.get(INCLUDE_PRE_RELEASE).getOption(PART_OF_IDENTITY), is(true));
+
     }
 
     @Test
