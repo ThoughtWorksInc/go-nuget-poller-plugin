@@ -31,9 +31,9 @@ public class PluginConfig implements PackageMaterialConfiguration {
     public static final Property PKG_CONFIG_PACKAGE_ID =
             new PackageMaterialProperty(PACKAGE_ID).with(DISPLAY_NAME, "Package Id").with(DISPLAY_ORDER, 0);
     public static final Property PKG_CONFIG_POLL_VERSION_FROM =
-            new PackageMaterialProperty(POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1).with(PART_OF_IDENTITY, false);
+            new PackageMaterialProperty(POLL_VERSION_FROM).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll >=").with(DISPLAY_ORDER, 1);
     public static final Property PKG_CONFIG_POLL_VERSION_TO =
-            new PackageMaterialProperty(POLL_VERSION_TO).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
+            new PackageMaterialProperty(POLL_VERSION_TO).with(REQUIRED, false).with(DISPLAY_NAME, "Version to poll <").with(DISPLAY_ORDER, 2);
     public static final Property PKG_CONFIG_INCLUDE_PRE_RELEASE =
             new PackageMaterialProperty(INCLUDE_PRE_RELEASE).with(REQUIRED, false).with(DISPLAY_NAME, "Include Prerelease? (yes/no, defaults to yes)").with(DISPLAY_ORDER, 3);
 

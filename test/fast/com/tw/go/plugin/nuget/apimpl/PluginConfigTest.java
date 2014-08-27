@@ -57,14 +57,23 @@ public class PluginConfigTest {
         assertNotNull(configurations.get(PACKAGE_ID));
         assertThat(configurations.get(PACKAGE_ID).getOption(DISPLAY_NAME), is("Package Id"));
         assertThat(configurations.get(PACKAGE_ID).getOption(DISPLAY_ORDER), is(0));
+        assertThat(configurations.get(PACKAGE_ID).getOption(PART_OF_IDENTITY), is(true));
         assertNotNull(configurations.get(POLL_VERSION_FROM));
         assertThat(configurations.get(POLL_VERSION_FROM).getOption(DISPLAY_NAME), is("Version to poll >="));
         assertThat(configurations.get(POLL_VERSION_FROM).getOption(DISPLAY_ORDER), is(1));
         assertThat(configurations.get(POLL_VERSION_FROM).getOption(REQUIRED), is(false));
+        assertThat(configurations.get(POLL_VERSION_FROM).getOption(PART_OF_IDENTITY), is(true));
         assertNotNull(configurations.get(POLL_VERSION_TO));
         assertThat(configurations.get(POLL_VERSION_TO).getOption(DISPLAY_NAME), is("Version to poll <"));
         assertThat(configurations.get(POLL_VERSION_TO).getOption(DISPLAY_ORDER), is(2));
         assertThat(configurations.get(POLL_VERSION_TO).getOption(REQUIRED), is(false));
+        assertThat(configurations.get(POLL_VERSION_TO).getOption(PART_OF_IDENTITY), is(true));
+        assertNotNull(configurations.get(INCLUDE_PRE_RELEASE));
+        assertThat(configurations.get(INCLUDE_PRE_RELEASE).getOption(DISPLAY_NAME), is("Include Prerelease? (yes/no, defaults to yes)"));
+        assertThat(configurations.get(INCLUDE_PRE_RELEASE).getOption(DISPLAY_ORDER), is(3));
+        assertThat(configurations.get(INCLUDE_PRE_RELEASE).getOption(REQUIRED), is(false));
+        assertThat(configurations.get(INCLUDE_PRE_RELEASE).getOption(PART_OF_IDENTITY), is(true));
+
     }
 
     @Test

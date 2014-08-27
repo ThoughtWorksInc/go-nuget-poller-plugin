@@ -39,7 +39,7 @@ public class NuGetTest {
         PackageRevision lastKnownVersion = new PackageRevision("1Password-1.0.9.288", new SimpleDateFormat("yyyy-MM-dd").parse("2013-03-21"), "xyz");
         lastKnownVersion.addData(PACKAGE_VERSION, "1.0.9.288");
         PackageRevision result = new NuGetPoller().poll(new NuGetParams(RepoUrl.create("http://chocolatey.org/api/v2", null, null), "1Password", null, null, lastKnownVersion, true));
-        assertThat(result.getDataFor(PACKAGE_VERSION), is("1.0.9.340"));
+        assertThat(result.getDataFor(PACKAGE_VERSION), is("1.0.9.341"));
     }
 
     @Test
