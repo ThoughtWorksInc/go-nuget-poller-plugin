@@ -24,6 +24,11 @@ public class NuGetParams {
         this.includePreRelease = includePreReleaseVersions;
     }
 
+    @Override
+    public String toString() {
+        return String.format("packageId:%s, repoUrl:%s, pollVersionFrom:%s, pollVersionTo:%s, lastKnownRevision:%s, includePreRelease:%s", packageId, repoUrl.getUrlStr(), pollVersionFrom, pollVersionTo, lastKnownVersion, includePreRelease);
+    }
+
     public String getPackageId() {
         return packageId;
     }
