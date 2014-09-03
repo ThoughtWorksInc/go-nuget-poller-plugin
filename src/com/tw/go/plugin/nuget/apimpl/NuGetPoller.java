@@ -106,10 +106,14 @@ public class NuGetPoller implements PackageMaterialPoller {
     public PackageRevision poll(NuGetParams params) {
         String url = params.getQuery();
         LOGGER.info(url);
-        PackageRevision packageRevision = new NuGetFeedDocument(new Feed(url).download()).getPackageRevision(params.isLastVersionKnown());
-        if(params.getRepoUrl().getCredentials().provided())
+        PackageRevision packageRevision = new NuGetFeedDocument(getFeed(url).download()).getPackageRevision(params.isLastVersionKnown());
+        if (packageRevision != null && params.getRepoUrl().getCredentials().provided())
             addUserInfoToLocation(packageRevision, params.getRepoUrl().getCredentials());
         return packageRevision;
+    }
+
+    Feed getFeed(String url) {
+        return new Feed(url);
     }
 
     private void addUserInfoToLocation(PackageRevision packageRevision, Credentials credentials) {
