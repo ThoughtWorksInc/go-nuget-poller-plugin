@@ -34,11 +34,11 @@
     </target>
 
     <target name="compile.source" depends="prepare, resolve">
-        <javac srcdir="src" destdir="${target.dir}/src" classpathref="compile.classpath" includeantruntime="false" source="1.6"/>
+        <javac srcdir="src" destdir="${target.dir}/src" classpathref="compile.classpath" includeantruntime="false" source="1.6" target="1.6"/>
     </target>
 
     <target name="compile.test" depends="compile.source">
-        <javac srcdir="test" destdir="${target.dir}/test" includeantruntime="false">
+        <javac srcdir="test" destdir="${target.dir}/test" includeantruntime="false" source="1.6" target="1.6">
             <classpath refid="compile.classpath"/>
             <classpath location="${target.dir}/src"/>
         </javac>
