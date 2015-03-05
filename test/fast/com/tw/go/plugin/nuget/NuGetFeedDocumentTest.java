@@ -48,4 +48,20 @@ public class NuGetFeedDocumentTest {
         assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
         assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_VERSION), is("9.20.0"));
     }
+
+    @Test
+    public void badFeed() throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder;
+        builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new File("test" + File.separator + "fast" + File.separator + "nuget-feed-with-missing-props.xml"));
+        PackageRevision result = new NuGetFeedDocument(doc).getPackageRevision(false);
+        assertThat(result.getUser(), is("Igor Pavlov"));
+        assertThat(result.getRevision(), is("7-Zip.CommandLine-9.20.0"));
+        assertThat(result.getRevisionComment(), is(""));
+        assertThat(result.getTimestamp(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse("2013-06-09T15:36:30.807")));
+        assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
+        assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_VERSION), is("9.20.0"));
+    }
 }
