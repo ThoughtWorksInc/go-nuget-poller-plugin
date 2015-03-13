@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<feed xml:base="https://nuget.org/api/v2/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">GetUpdates</title>
+  <id>https://nuget.org/api/v2/Search</id>
+  <updated>2013-07-02T06:15:49Z</updated>
+  <link rel="self" title="GetUpdates" href="GetUpdates"/>
+  <entry>
+        <id>https://nuget.org/api/v2/Packages(Id='7-Zip.CommandLine',Version='9.20.0')</id>
+    <title type="text">7-Zip.CommandLine</title>
+    <summary type="text"></summary>
+    <updated>2013-07-01T16:56:04Z</updated>
+        <author>
+            <name>Igor Pavlov</name>
+        </author>
+        <link rel="edit-media" title="V2FeedPackage" href="Packages(Id='7-Zip.CommandLine',Version='9.20.0')/$value" />
+        <link rel="edit" title="V2FeedPackage" href="Packages(Id='7-Zip.CommandLine',Version='9.20.0')" />
+        <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+        <content type="application/zip" src="https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0" />
+        <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Version>9.20.0</d:Version>
+      <d:Created m:type="Edm.DateTime">2013-06-09T15:36:30.807</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>7-Zip is a file archiver with a high compression ratio.</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">50</d:DownloadCount>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">true</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Language>en-US</d:Language>
+      <d:Published m:type="Edm.DateTime">2013-06-09T15:36:30.807</d:Published>
+      <d:PackageHash>yedSpc4eDl8rik0icFZwbf4uVoWgdX7/GcVNiAs6oDWpI4JWF0pERD0BK/CH/9yiIcJMmsAlopH1WxKiPjIurw==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">397408</d:PackageSize>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Tags>7z 7zip 7-Zip zip</d:Tags>
+      <d:Title>7-Zip Command Line Version</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">50</d:VersionDownloadCount>
+      <d:MinClientVersion m:null="true"></d:MinClientVersion>
+    </m:properties>
+  </entry>
+</feed>

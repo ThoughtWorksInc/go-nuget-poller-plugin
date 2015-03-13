@@ -4,6 +4,7 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.tw.go.plugin.nuget.config.NuGetPackageConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.Date;
@@ -30,7 +31,10 @@ public class NuGetFeedDocument {
     }
 
     private String getProperty(NodeList properties, String name) {
-        return firstOf(properties).getElementsByTagNameNS(SCHEMA_ADO_DATASERVICES, name).item(0).getTextContent();
+        Element element = firstOf(properties);
+        NodeList elementsByTagNameNS = element.getElementsByTagNameNS(SCHEMA_ADO_DATASERVICES, name);
+        Node item = elementsByTagNameNS.item(0);
+        return item == null ? "" : item.getTextContent();
     }
 
     private NodeList getProperties() {
@@ -69,7 +73,7 @@ public class NuGetFeedDocument {
 
     private String getReleaseNotes() {
         String releaseNotes = getProperty(getProperties(), "ReleaseNotes");
-        if (releaseNotes == null || releaseNotes.trim().isEmpty()) return null;
+        if (releaseNotes == null || releaseNotes.trim().isEmpty()) return "";
         return firstNonEmptyLine(releaseNotes);
     }
 
@@ -79,12 +83,12 @@ public class NuGetFeedDocument {
             if (!line.trim().isEmpty())
                 return line.trim();
         }
-        return null;
+        return "";
     }
 
     private String getProjectUrl() {
         String projectUrl = getProperty(getProperties(), "ProjectUrl");
-        if (projectUrl == null || projectUrl.trim().isEmpty()) return null;
+        if (projectUrl == null || projectUrl.trim().isEmpty()) return "";
         return firstNonEmptyLine(projectUrl);
     }
 
