@@ -34,9 +34,7 @@ public class NuGetFeedDocument {
         Element element = firstOf(properties);
         NodeList elementsByTagNameNS = element.getElementsByTagNameNS(SCHEMA_ADO_DATASERVICES, name);
         Node item = elementsByTagNameNS.item(0);
-        if (item == null)
-            return "";
-        return item.getTextContent();
+        return item == null ? "" : item.getTextContent();
     }
 
     private NodeList getProperties() {

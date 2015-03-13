@@ -60,6 +60,7 @@ public class NuGetFeedDocumentTest {
         assertThat(result.getUser(), is("Igor Pavlov"));
         assertThat(result.getRevision(), is("7-Zip.CommandLine-9.20.0"));
         assertThat(result.getRevisionComment(), is(""));
+        assertThat(result.getTrackbackUrl(), is(""));
         assertThat(result.getTimestamp(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse("2013-06-09T15:36:30.807")));
         assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_LOCATION), is("https://nuget.org/api/v2/package/7-Zip.CommandLine/9.20.0"));
         assertThat(result.getDataFor(NuGetPackageConfig.PACKAGE_VERSION), is("9.20.0"));
